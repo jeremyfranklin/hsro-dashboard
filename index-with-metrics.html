@@ -684,8 +684,9 @@ function updateRing(c) {
   const subEl = document.getElementById('ringPctSub');
   if (pctEl) pctEl.textContent = pct + '%';
   if (subEl) {
-    if (pct === 0) subEl.textContent = 'goals not started';
-    else if (pct === 100) subEl.textContent = 'all goals complete!';
+    if (pct === 100) subEl.textContent = 'all goals complete!';
+    else if (pct === 0 && c.in_progress > 0) subEl.textContent = `${c.in_progress} goal${c.in_progress!==1?'s':''} in progress`;
+    else if (pct === 0) subEl.textContent = 'no goals on track yet';
     else subEl.textContent = `${done} of ${c.total} on track / done`;
   }
 }
