@@ -17,351 +17,526 @@
    Red Rocks:       #890000
 ═══════════════════════════════════════════════ */
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red:    #BE0000;
+  --red2:   #890000;
+  --teal:   #4F868E;
+  --teal2:  #3ABFC0;
+  --green:  #6CC24A;
+  --amber:  #FFB81D;
+  --coral:  #E4937B;
+  --gray0:  #F0F2F3;
+  --gray1:  #E2E6E6;
+  --gray2:  #708E99;
+  --gray3:  #939598;
+  --dark:   #1A1A1A;
+  --sidebar-w: 260px;
+}
 
 body {
   font-family: 'Century Gothic', 'AppleGothic', 'Trebuchet MS', Arial, sans-serif;
-  background: #F0F2F3;
-  color: #1A1A1A;
+  background: var(--gray0);
+  color: var(--dark);
   min-height: 100vh;
-}
-
-/* ── Header ─────────────────────────────────── */
-.site-header {
-  background: #BE0000;
-  color: #fff;
-  padding: 20px 36px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
-}
-.header-left h1 {
-  font-size: 1.55rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.header-left .subtitle {
-  font-size: 0.82rem;
-  opacity: 0.85;
-  margin-top: 4px;
-  letter-spacing: 0.06em;
-}
-.header-right {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  flex-shrink: 0;
 }
-.header-btns { display: flex; gap: 8px; align-items: center; }
-.btn-admin {
-  background: #fff;
-  color: #BE0000;
-  padding: 8px 18px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 0.82rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  transition: background 0.15s;
-}
-.btn-admin:hover { background: #E2E6E6; }
-.btn-download {
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  padding: 8px 18px;
-  border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.5);
-  font-family: inherit;
-  font-weight: 700;
-  font-size: 0.82rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-.btn-download:hover    { background: rgba(255,255,255,0.28); }
-.btn-download:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* ── Auth Gate ───────────────────────────────── */
+/* ══ AUTH GATE ══════════════════════════════════════ */
 #authGate {
   position: fixed; inset: 0; z-index: 9999;
-  background: #F0F2F3;
-  display: flex; align-items: center; justify-content: center;
-  padding: 24px;
+  background: var(--gray0);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
 }
-.auth-gate-card {
-  background: #fff; border-radius: 12px;
-  padding: 48px 44px; max-width: 420px; width: 100%;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+.gate-card {
+  background: #fff; border-radius: 16px; padding: 52px 44px;
+  max-width: 400px; width: 100%; text-align: center;
+  border: 1px solid var(--gray1);
 }
-.auth-gate-logo {
-  display: inline-block; background: #BE0000; color: #fff;
-  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-  text-transform: uppercase; padding: 6px 14px; border-radius: 4px;
-  margin-bottom: 28px;
+.gate-logo {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--red); color: #fff; font-size: 0.68rem;
+  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 6px; margin-bottom: 28px;
 }
-.auth-gate-card .lock-icon { font-size: 2.6rem; margin-bottom: 14px; }
-.auth-gate-card h2 {
-  font-size: 1.15rem; font-weight: 700; letter-spacing: 0.04em;
-  text-transform: uppercase; color: #1A1A1A; margin-bottom: 6px;
+.gate-icon {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: #fff1f1; display: flex; align-items: center;
+  justify-content: center; margin: 0 auto 16px; font-size: 1.4rem;
 }
-.auth-gate-card p { font-size: 0.85rem; color: #708E99; margin-bottom: 26px; line-height: 1.6; }
-.auth-gate-card input[type="password"] {
-  width: 100%; padding: 13px 16px; border: 2px solid #E2E6E6;
-  border-radius: 6px; font-family: inherit; font-size: 1rem;
-  letter-spacing: 0.12em; color: #1A1A1A; margin-bottom: 12px;
-  transition: border-color 0.2s; text-align: center;
+.gate-card h2 {
+  font-size: 1.1rem; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; margin-bottom: 6px;
 }
-.auth-gate-card input[type="password"]:focus { outline: none; border-color: #BE0000; }
-.auth-gate-card .btn-enter {
-  width: 100%; padding: 13px; background: #BE0000; color: #fff;
-  border: none; border-radius: 6px; font-family: inherit; font-size: 0.9rem;
-  font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+.gate-card p { font-size: 0.83rem; color: var(--gray2); line-height: 1.65; margin-bottom: 28px; }
+.gate-card input[type="password"] {
+  width: 100%; padding: 13px 16px; border: 1.5px solid var(--gray1);
+  border-radius: 8px; font-family: inherit; font-size: 1rem;
+  letter-spacing: 0.12em; color: var(--dark); margin-bottom: 10px;
+  text-align: center; transition: border-color 0.2s;
+}
+.gate-card input[type="password"]:focus { outline: none; border-color: var(--red); }
+.gate-card .btn-enter {
+  width: 100%; padding: 13px; background: var(--red); color: #fff;
+  border: none; border-radius: 8px; font-family: inherit; font-size: 0.875rem;
+  font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
   cursor: pointer; transition: background 0.15s;
 }
-.auth-gate-card .btn-enter:hover    { background: #890000; }
-.auth-gate-card .btn-enter:disabled { background: #939598; cursor: not-allowed; }
-.auth-gate-error {
-  color: #BE0000; font-size: 0.82rem; margin-top: 10px;
-  min-height: 20px; font-weight: 600;
+.gate-card .btn-enter:hover { background: var(--red2); }
+.gate-card .btn-enter:disabled { background: var(--gray3); cursor: not-allowed; }
+.gate-error { color: var(--red); font-size: 0.8rem; margin-top: 10px; min-height: 18px; font-weight: 600; }
+
+/* ══ APP SHELL ══════════════════════════════════════ */
+.app { display: flex; flex: 1; min-height: 100vh; }
+
+/* ══ SIDEBAR ════════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: #fff; border-right: 1px solid var(--gray1);
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
 }
-.sync-info { font-size: 0.73rem; opacity: 0.85; letter-spacing: 0.03em; }
+.sidebar-brand {
+  padding: 22px 20px 18px; border-bottom: 1px solid var(--gray1);
+}
+.brand-logo {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--red); color: #fff; font-size: 0.62rem;
+  font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 5px 10px; border-radius: 5px; margin-bottom: 10px;
+}
+.sidebar-brand h1 { font-size: 0.88rem; font-weight: 700; letter-spacing: 0.03em; line-height: 1.35; }
+.sidebar-brand .sub { font-size: 0.72rem; color: var(--gray2); margin-top: 3px; }
+
+/* Overall progress ring */
+.sidebar-overview {
+  padding: 20px 20px 16px; border-bottom: 1px solid var(--gray1);
+}
+.overview-title {
+  font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--gray2); font-weight: 700; margin-bottom: 14px;
+}
+.ring-wrap {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+}
+.ring-svg { flex-shrink: 0; }
+.ring-stats { flex: 1; }
+.ring-pct { font-size: 1.6rem; font-weight: 700; color: var(--dark); line-height: 1; }
+.ring-pct-sub { font-size: 0.72rem; color: var(--gray2); margin-top: 3px; }
+
+/* Status mini pills */
+.status-pills { display: flex; flex-direction: column; gap: 5px; }
+.sp-row {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; padding: 5px 8px; border-radius: 6px;
+  transition: background 0.12s;
+}
+.sp-row:hover { background: var(--gray0); }
+.sp-row.active { background: var(--gray0); }
+.sp-left { display: flex; align-items: center; gap: 8px; }
+.sp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sp-label { font-size: 0.76rem; color: var(--dark); }
+.sp-count {
+  font-size: 0.76rem; font-weight: 700; min-width: 20px; text-align: right;
+}
+.sp-row.f-not-started .sp-dot    { background: var(--gray3); }
+.sp-row.f-in-progress .sp-dot    { background: var(--teal); }
+.sp-row.f-on-track .sp-dot       { background: var(--green); }
+.sp-row.f-completed .sp-dot      { background: var(--teal2); }
+.sp-row.f-at-risk .sp-dot        { background: var(--red); }
+.sp-row.f-not-started .sp-count  { color: var(--gray3); }
+.sp-row.f-in-progress .sp-count  { color: var(--teal); }
+.sp-row.f-on-track .sp-count     { color: var(--green); }
+.sp-row.f-completed .sp-count    { color: var(--teal2); }
+.sp-row.f-at-risk .sp-count      { color: var(--red); }
+
+/* Category nav */
+.sidebar-cats {
+  padding: 16px 12px; border-bottom: 1px solid var(--gray1); flex: 1;
+}
+.cats-title {
+  font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--gray2); font-weight: 700; margin-bottom: 8px; padding: 0 8px;
+}
+.cat-nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 8px;
+  border-radius: 7px; cursor: pointer; transition: background 0.12s;
+  text-decoration: none;
+}
+.cat-nav-item:hover { background: var(--gray0); }
+.cat-nav-item.active { background: var(--gray0); }
+.cat-nav-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.cat-nav-label { font-size: 0.78rem; color: var(--dark); flex: 1; line-height: 1.3; }
+.cat-nav-badge {
+  font-size: 0.62rem; background: var(--gray0); color: var(--gray2);
+  padding: 2px 7px; border-radius: 20px; font-weight: 700; flex-shrink: 0;
+}
+
+/* Sidebar footer */
+.sidebar-footer { padding: 14px 20px; border-top: 1px solid var(--gray1); }
+.sync-row { display: flex; align-items: center; gap: 7px; }
 #syncDot {
-  display: inline-block;
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #6CC24A;
-  margin-right: 5px;
-  vertical-align: middle;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green); flex-shrink: 0;
 }
-#syncDot.loading { background: #FFB81D; animation: pulse 1s infinite; }
-#syncDot.error   { background: #E4937B; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+#syncDot.loading { background: var(--amber); animation: pulse 1s infinite; }
+#syncDot.error   { background: var(--coral); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+.sync-text { font-size: 0.7rem; color: var(--gray2); }
 
-/* ── Summary Bar ────────────────────────────── */
-.summary-bar {
-  display: flex; gap: 12px; padding: 20px 36px;
-  flex-wrap: wrap; background: #fff;
-  border-bottom: 1px solid #E2E6E6;
-}
-.stat-card {
-  flex: 1; min-width: 110px; text-align: center;
-  padding: 14px 12px 12px; border-radius: 6px; background: #F0F2F3;
-}
-.stat-card .num { font-size: 1.9rem; font-weight: 700; line-height: 1; }
-.stat-card .lbl { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: #708E99; margin-top: 5px; }
-.stat-card.s-total       .num { color: #1A1A1A; }
-.stat-card.s-not-started .num { color: #939598; }
-.stat-card.s-in-progress .num { color: #4F868E; }
-.stat-card.s-on-track    .num { color: #6CC24A; }
-.stat-card.s-completed   .num { color: #3ABFC0; }
-.stat-card.s-at-risk     .num { color: #BE0000; }
+/* ══ MAIN AREA ══════════════════════════════════════ */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
-/* ── Notice Banner ──────────────────────────── */
+/* Top bar */
+.topbar {
+  background: #fff; border-bottom: 1px solid var(--gray1);
+  padding: 14px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 10;
+}
+.topbar-search {
+  flex: 1; min-width: 160px; max-width: 320px;
+  position: relative; display: flex; align-items: center;
+}
+.topbar-search svg {
+  position: absolute; left: 10px; pointer-events: none;
+  color: var(--gray3);
+}
+.topbar-search input {
+  width: 100%; padding: 8px 12px 8px 32px;
+  border: 1.5px solid var(--gray1); border-radius: 7px;
+  font-family: inherit; font-size: 0.83rem; color: var(--dark);
+  background: var(--gray0); transition: border-color 0.2s;
+}
+.topbar-search input:focus { outline: none; border-color: var(--teal); background: #fff; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-dl {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 7px;
+  background: var(--gray0); border: 1.5px solid var(--gray1);
+  font-family: inherit; font-size: 0.78rem; font-weight: 700;
+  color: var(--dark); letter-spacing: 0.04em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-dl:hover { background: var(--gray1); }
+.btn-dl:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-portal {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 7px;
+  background: var(--red); color: #fff;
+  font-family: inherit; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  text-decoration: none; transition: background 0.15s;
+}
+.btn-portal:hover { background: var(--red2); }
+
+/* Notice banner */
 .notice-banner {
-  background: #FFF8E7; border-left: 4px solid #FFB81D;
-  padding: 14px 20px; margin: 20px 36px 0;
-  border-radius: 0 6px 6px 0; font-size: 0.85rem;
-  line-height: 1.6; display: none;
+  background: #fffbef; border-left: 4px solid var(--amber);
+  padding: 12px 18px; margin: 16px 28px 0;
+  border-radius: 0 6px 6px 0; font-size: 0.83rem; line-height: 1.6;
+  display: none;
 }
-.notice-banner code { background: #E2E6E6; padding: 1px 5px; border-radius: 3px; font-size: 0.8rem; }
+.notice-banner code { background: var(--gray1); padding: 1px 5px; border-radius: 3px; font-size: 0.78rem; }
 
-/* ── Main Content ───────────────────────────── */
-.main-content { padding: 20px 36px 48px; }
+/* ── Content ─────────────────────────────── */
+.content { padding: 20px 28px 48px; }
 
-/* ── Category Section ───────────────────────── */
-.category-section { margin-bottom: 36px; }
-.category-header {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 14px; padding-bottom: 10px; border-bottom: 3px solid;
+/* Category section */
+.cat-section { margin-bottom: 40px; scroll-margin-top: 68px; }
+.cat-section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2.5px solid;
 }
-.cat-icon  { font-size: 1.3rem; }
-.cat-title { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-.cat-count {
-  font-size: 0.72rem; background: #E2E6E6; color: #708E99;
-  padding: 2px 9px; border-radius: 20px; font-weight: 600; margin-left: 2px;
-}
+.cat-section-icon { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+.cat-section-label { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; flex: 1; }
+.cat-section-count { font-size: 0.72rem; color: var(--gray2); background: var(--gray0); padding: 3px 10px; border-radius: 20px; font-weight: 700; }
 
-/* ── Goal Cards ─────────────────────────────── */
-.goals-grid { display: grid; gap: 14px; }
+/* Goal grid */
+.goals-grid { display: grid; gap: 12px; }
+
+/* Goal card */
 .goal-card {
-  background: #fff; border-radius: 8px; padding: 18px 22px;
-  border-left: 5px solid; box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-  cursor: pointer; transition: box-shadow 0.2s, transform 0.1s;
+  background: #fff; border-radius: 10px;
+  border: 1px solid var(--gray1); border-left: 5px solid;
+  overflow: hidden; cursor: pointer;
+  transition: box-shadow 0.18s, transform 0.12s;
 }
-.goal-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.12); transform: translateY(-1px); }
+.goal-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.09); transform: translateY(-1px); }
+
+.goal-card-body { padding: 16px 20px 14px; }
 .goal-card-top {
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 10px; flex-wrap: wrap;
 }
-.goal-id { font-size: 0.7rem; font-weight: 700; color: #939598; letter-spacing: 0.06em; text-transform: uppercase; }
+.goal-id {
+  font-size: 0.64rem; font-weight: 700; color: var(--gray2);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--gray0); padding: 3px 8px; border-radius: 4px;
+}
 .team-badge {
-  font-size: 0.7rem; background: #E2E6E6; color: #708E99;
-  padding: 3px 10px; border-radius: 20px; font-weight: 600; letter-spacing: 0.03em;
+  font-size: 0.68rem; color: var(--gray2); background: var(--gray0);
+  padding: 3px 10px; border-radius: 20px; font-weight: 600;
 }
 .status-badge {
-  font-size: 0.68rem; padding: 3px 10px; border-radius: 20px;
-  font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-left: auto;
+  font-size: 0.64rem; padding: 3px 10px; border-radius: 20px;
+  font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  margin-left: auto;
 }
-.status-badge.not_started { background: #ECEFF1; color: #708E99; }
-.status-badge.in_progress { background: #E8F4F5; color: #4F868E; }
-.status-badge.on_track    { background: #EDF7E6; color: #4A8A33; }
-.status-badge.completed   { background: #E4F8F8; color: #2A9191; }
+.status-badge.not_started { background: #ECEFF1; color: #546E7A; }
+.status-badge.in_progress { background: #E1EEF0; color: #3A6870; }
+.status-badge.on_track    { background: #EAF5E2; color: #3E7A22; }
+.status-badge.completed   { background: #DFF6F6; color: #1E8A8A; }
 .status-badge.at_risk     { background: #FDECEA; color: #BE0000; }
-.goal-text { font-size: 0.875rem; color: #333; line-height: 1.6; margin-bottom: 14px; }
 
-/* ── Metric Progress Bar ─────────────────────── */
-.metric-bar-wrap {
-  margin-bottom: 14px; padding: 10px 14px;
-  background: #F8FAFA; border-radius: 6px;
-}
-.metric-bar-header {
-  display: flex; justify-content: space-between;
-  align-items: center; margin-bottom: 7px;
-}
-.metric-bar-label {
-  font-size: 0.7rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.06em; color: #708E99;
-}
-.metric-bar-count { font-size: 0.82rem; font-weight: 700; color: #1A1A1A; }
-.metric-bar-target { font-size: 0.72rem; color: #939598; font-weight: 400; }
-.metric-bar-bg { height: 7px; background: #E2E6E6; border-radius: 10px; overflow: hidden; }
-.metric-bar-fill { height: 100%; border-radius: 10px; transition: width 0.6s ease; min-width: 2px; }
+.goal-text { font-size: 0.845rem; color: #333; line-height: 1.65; margin-bottom: 14px; }
 
-/* ── Goal Footer ─────────────────────────────── */
+/* Metric visualization */
+.metric-block {
+  margin-bottom: 14px; padding: 12px 14px;
+  background: var(--gray0); border-radius: 8px;
+}
+.metric-top {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 8px;
+}
+.metric-label {
+  font-size: 0.64rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--gray2);
+}
+.metric-nums { display: flex; align-items: baseline; gap: 4px; }
+.metric-val { font-size: 1.05rem; font-weight: 700; color: var(--dark); }
+.metric-of { font-size: 0.72rem; color: var(--gray3); }
+.metric-pct { font-size: 0.72rem; color: var(--gray3); }
+.metric-track { height: 6px; background: var(--gray1); border-radius: 99px; overflow: hidden; }
+.metric-fill { height: 100%; border-radius: 99px; transition: width 0.7s ease; min-width: 3px; }
+
+/* Goal footer */
 .goal-footer {
-  display: flex; align-items: flex-start;
-  justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap;
 }
-.last-update-txt { font-size: 0.78rem; color: #939598; font-style: italic; flex: 1; line-height: 1.5; }
-.last-update-txt .au { color: #4F868E; font-weight: 600; font-style: normal; }
-.expand-btn { font-size: 0.72rem; color: #9DD8D7; flex-shrink: 0; font-weight: 600; letter-spacing: 0.03em; user-select: none; }
+.last-upd { font-size: 0.75rem; color: var(--gray3); font-style: italic; flex: 1; line-height: 1.5; }
+.last-upd .upd-author { color: var(--teal); font-weight: 700; font-style: normal; }
+.expand-toggle {
+  font-size: 0.7rem; color: var(--teal2); font-weight: 700;
+  letter-spacing: 0.03em; flex-shrink: 0; user-select: none;
+  display: flex; align-items: center; gap: 4px;
+}
 
-/* ── Update History ─────────────────────────── */
-.update-history { margin-top: 14px; padding-top: 14px; border-top: 1px solid #E2E6E6; display: none; }
-.update-history.open { display: block; }
-.history-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: #939598; margin-bottom: 10px; font-weight: 700; }
-.update-item { background: #F8FAFA; border-radius: 5px; padding: 10px 13px; margin-bottom: 8px; border-left: 3px solid #E2E6E6; }
-.update-item-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
-.ui-author  { font-size: 0.78rem; font-weight: 700; color: #1A1A1A; }
-.ui-date    { font-size: 0.7rem; color: #939598; }
-.ui-metric  { font-size: 0.7rem; font-weight: 700; color: #4F868E; background: #E8F4F5; padding: 2px 8px; border-radius: 20px; }
-.ui-comment { font-size: 0.82rem; color: #555; line-height: 1.5; margin-top: 4px; }
-.no-updates-msg { font-size: 0.8rem; color: #B0BAC0; font-style: italic; text-align: center; padding: 12px 0; }
+/* History panel */
+.history-panel {
+  display: none; padding: 0 20px 16px; border-top: 1px solid var(--gray0);
+}
+.history-panel.open { display: block; }
+.history-header {
+  font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--gray2); font-weight: 700; padding: 12px 0 8px;
+}
+.upd-item {
+  background: var(--gray0); border-radius: 7px; padding: 10px 13px;
+  margin-bottom: 7px; border-left: 3px solid var(--gray1);
+}
+.upd-item-meta {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap;
+}
+.ui-author { font-size: 0.78rem; font-weight: 700; color: var(--dark); }
+.ui-date   { font-size: 0.68rem; color: var(--gray3); }
+.ui-metric {
+  font-size: 0.66rem; font-weight: 700; color: var(--teal);
+  background: #E1EEF0; padding: 2px 8px; border-radius: 20px;
+}
+.ui-comment { font-size: 0.8rem; color: #555; line-height: 1.5; margin-top: 4px; }
+.no-updates { font-size: 0.78rem; color: #B0BAC0; font-style: italic; text-align: center; padding: 12px 0; }
 
-/* ── Loading ────────────────────────────────── */
-.loading-msg { text-align: center; padding: 60px 20px; color: #939598; font-size: 0.9rem; letter-spacing: 0.04em; }
-.loading-spinner {
-  width: 30px; height: 30px;
-  border: 3px solid #E2E6E6; border-top-color: #BE0000;
-  border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px;
+/* Loading */
+.loading-block {
+  text-align: center; padding: 60px 20px;
+  color: var(--gray3); font-size: 0.88rem; letter-spacing: 0.04em;
+}
+.spinner {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 3px solid var(--gray1); border-top-color: var(--red);
+  animation: spin 0.75s linear infinite; margin: 0 auto 14px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Footer ─────────────────────────────────── */
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 40px 20px;
+  color: var(--gray3); font-size: 0.84rem;
+}
+
+/* Footer */
 .site-footer {
-  text-align: center; padding: 22px 20px; color: #939598;
-  font-size: 0.75rem; border-top: 1px solid #E2E6E6;
+  text-align: center; padding: 18px 20px; color: var(--gray3);
+  font-size: 0.72rem; border-top: 1px solid var(--gray1);
   background: #fff; letter-spacing: 0.03em;
 }
-.site-footer a { color: #4F868E; text-decoration: none; }
+.site-footer a { color: var(--teal); text-decoration: none; }
 
-/* ── Responsive ─────────────────────────────── */
-@media (max-width: 640px) {
-  .site-header { padding: 16px 18px; }
-  .header-left h1 { font-size: 1.15rem; }
-  .summary-bar, .main-content { padding-left: 18px; padding-right: 18px; }
-  .notice-banner { margin: 16px 18px 0; }
-  .stat-card { min-width: 90px; }
-  .header-btns { flex-direction: column; align-items: flex-end; gap: 6px; }
+/* ── Responsive ─────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .topbar  { padding: 12px 16px; }
+  .content { padding: 16px 16px 48px; }
+  .notice-banner { margin: 12px 16px 0; }
 }
 </style>
 </head>
 <body>
 
-<!-- ══ AUTH GATE ════════════════════════════════════════════════════ -->
+<!-- ══ AUTH GATE ════════════════════════════════════ -->
 <div id="authGate">
-  <div class="auth-gate-card">
-    <div class="auth-gate-logo">HSRO &nbsp;·&nbsp; FY27</div>
-    <div class="lock-icon">🔒</div>
+  <div class="gate-card">
+    <div class="gate-logo">HSRO &nbsp;·&nbsp; FY27</div>
+    <div class="gate-icon">🔒</div>
     <h2>Goals Dashboard</h2>
     <p>This dashboard contains confidential information.<br>Enter the team password to continue.</p>
     <input type="password" id="gatePassword" placeholder="••••••••••"
            onkeydown="if(event.key==='Enter') gateAuthenticate()" autocomplete="current-password" />
     <button class="btn-enter" id="gateBtn" onclick="gateAuthenticate()">View Dashboard</button>
-    <div class="auth-gate-error" id="gateError"></div>
+    <div class="gate-error" id="gateError"></div>
   </div>
 </div>
 
-<header class="site-header">
-  <div class="header-left">
-    <h1>HSRO FY27 Goals Dashboard</h1>
-    <div class="subtitle">Health Research Office &nbsp;·&nbsp; Fiscal Year 2027</div>
-  </div>
-  <div class="header-right">
-    <div class="header-btns">
-      <button class="btn-download" id="downloadBtn" onclick="downloadReport()">⬇ Download Report</button>
-      <a href="admin.html" class="btn-admin">✏ Update Portal</a>
+<div class="app">
+
+  <!-- ══ SIDEBAR ════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">HSRO &nbsp;·&nbsp; FY27</div>
+      <h1>Goals Dashboard</h1>
+      <div class="sub">Health Research Office</div>
     </div>
-    <div class="sync-info">
-      <span id="syncDot" class="loading"></span>
-      <span id="syncText">Connecting...</span>
+
+    <div class="sidebar-overview">
+      <div class="overview-title">Overall Progress</div>
+      <div class="ring-wrap">
+        <svg class="ring-svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Overall goal completion ring">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="#E2E6E6" stroke-width="7"/>
+          <circle id="ringArc" cx="32" cy="32" r="26" fill="none"
+                  stroke="#3ABFC0" stroke-width="7"
+                  stroke-dasharray="163.36" stroke-dashoffset="163.36"
+                  stroke-linecap="round" transform="rotate(-90 32 32)"
+                  style="transition: stroke-dashoffset 0.8s ease"/>
+        </svg>
+        <div class="ring-stats">
+          <div class="ring-pct" id="ringPct">0%</div>
+          <div class="ring-pct-sub" id="ringPctSub">goals not started</div>
+        </div>
+      </div>
+
+      <!-- Status filter pills -->
+      <div class="status-pills">
+        <div class="sp-row f-all active" onclick="filterStatus(null, this)" title="Show all">
+          <div class="sp-left">
+            <div class="sp-dot" style="background:var(--gray1)"></div>
+            <div class="sp-label">All goals</div>
+          </div>
+          <div class="sp-count" id="sTotal" style="color:var(--dark)">13</div>
+        </div>
+        <div class="sp-row f-not-started" onclick="filterStatus('not_started', this)">
+          <div class="sp-left"><div class="sp-dot"></div><div class="sp-label">Not started</div></div>
+          <div class="sp-count" id="sNotStarted">—</div>
+        </div>
+        <div class="sp-row f-in-progress" onclick="filterStatus('in_progress', this)">
+          <div class="sp-left"><div class="sp-dot"></div><div class="sp-label">In progress</div></div>
+          <div class="sp-count" id="sInProgress">—</div>
+        </div>
+        <div class="sp-row f-on-track" onclick="filterStatus('on_track', this)">
+          <div class="sp-left"><div class="sp-dot"></div><div class="sp-label">On track</div></div>
+          <div class="sp-count" id="sOnTrack">—</div>
+        </div>
+        <div class="sp-row f-completed" onclick="filterStatus('completed', this)">
+          <div class="sp-left"><div class="sp-dot"></div><div class="sp-label">Completed</div></div>
+          <div class="sp-count" id="sCompleted">—</div>
+        </div>
+        <div class="sp-row f-at-risk" onclick="filterStatus('at_risk', this)">
+          <div class="sp-left"><div class="sp-dot"></div><div class="sp-label">At risk</div></div>
+          <div class="sp-count" id="sAtRisk">—</div>
+        </div>
+      </div>
     </div>
-  </div>
-</header>
 
-<div class="summary-bar">
-  <div class="stat-card s-total"><div class="num">13</div><div class="lbl">Total Goals</div></div>
-  <div class="stat-card s-not-started"><div class="num" id="sNotStarted">—</div><div class="lbl">Not Started</div></div>
-  <div class="stat-card s-in-progress"><div class="num" id="sInProgress">—</div><div class="lbl">In Progress</div></div>
-  <div class="stat-card s-on-track"><div class="num" id="sOnTrack">—</div><div class="lbl">On Track</div></div>
-  <div class="stat-card s-completed"><div class="num" id="sCompleted">—</div><div class="lbl">Completed</div></div>
-  <div class="stat-card s-at-risk"><div class="num" id="sAtRisk">—</div><div class="lbl">At Risk</div></div>
-</div>
+    <!-- Category nav -->
+    <div class="sidebar-cats">
+      <div class="cats-title">Categories</div>
+      <div id="catNav"></div>
+    </div>
 
-<div class="notice-banner" id="noticeBanner">
-  <strong>⚙️ Setup required:</strong> This dashboard is not yet connected to a live database.
-  Follow the instructions in <code>SETUP.md</code> to configure Supabase, then update the
-  <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> values at the top of this file.
-</div>
+    <div class="sidebar-footer">
+      <div class="sync-row">
+        <div id="syncDot" class="loading"></div>
+        <div class="sync-text" id="syncText">Connecting…</div>
+      </div>
+    </div>
+  </aside>
 
-<main class="main-content" id="mainContent">
-  <div class="loading-msg"><div class="loading-spinner"></div>Loading goals…</div>
-</main>
+  <!-- ══ MAIN ════════════════════════════════════════ -->
+  <div class="main">
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="topbar-search">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="6.5" cy="6.5" r="5.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search goals…" oninput="onSearch()" />
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-dl" id="downloadBtn" onclick="downloadReport()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 2v9M5 8l3 3 3-3"/><path d="M3 13h10"/>
+          </svg>
+          Download Report
+        </button>
+        <a href="admin.html" class="btn-portal">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 2l3 3-8 8H3v-3z"/>
+          </svg>
+          Update Portal
+        </a>
+      </div>
+    </div>
 
-<footer class="site-footer">
-  HSRO FY27 Goals Dashboard &nbsp;·&nbsp; University of Utah Health Research Office
-  &nbsp;·&nbsp; <a href="admin.html">Update Portal</a>
-</footer>
+    <div class="notice-banner" id="noticeBanner">
+      <strong>Setup required:</strong> This dashboard is not yet connected to a live database.
+      Follow the instructions in <code>SETUP.md</code> to configure Supabase, then update the
+      <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> values at the top of this file.
+    </div>
+
+    <main class="content" id="mainContent">
+      <div class="loading-block"><div class="spinner"></div>Loading goals…</div>
+    </main>
+
+    <footer class="site-footer">
+      HSRO FY27 Goals Dashboard &nbsp;·&nbsp; University of Utah Health Research Office
+      &nbsp;·&nbsp; <a href="admin.html">Update Portal</a>
+    </footer>
+  </div><!-- /.main -->
+
+</div><!-- /.app -->
 
 <script>
-// ════════════════════════════════════════════════════════════════════
-//  PASSWORD GATE
-//  Same SHA-256 hash system as admin portal.
-//  Default password: HSRO2027!
-//  To change: generate a new SHA-256 hash and replace the value below.
-// ════════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════
+   PASSWORD GATE — SHA-256
+   Default password: HSRO2027!
+   Replace hash below to change the password.
+════════════════════════════════════════════════════ */
 const GATE_PASSWORD_HASH = 'abab999561d01dd4edc25ae253d8c7f5cd99261fcf41b05653c7f12af55c25fb';
 
-async function hashStr(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+async function hashStr(s) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
 async function gateAuthenticate() {
   const btn = document.getElementById('gateBtn');
   btn.disabled = true; btn.textContent = 'Checking…';
-  const val  = document.getElementById('gatePassword').value;
-  const hash = await hashStr(val);
+  const hash = await hashStr(document.getElementById('gatePassword').value);
   btn.disabled = false; btn.textContent = 'View Dashboard';
-
   if (hash === GATE_PASSWORD_HASH) {
     sessionStorage.setItem('hsro_auth', '1');
     document.getElementById('authGate').style.display = 'none';
@@ -373,25 +548,21 @@ async function gateAuthenticate() {
     setTimeout(() => { err.textContent = ''; }, 4000);
   }
 }
-
-// Check if already authenticated this session
 if (sessionStorage.getItem('hsro_auth') === '1') {
   document.getElementById('authGate').style.display = 'none';
 } else {
-  // Focus password field on load
-  window.addEventListener('load', () => {
-    document.getElementById('gatePassword').focus();
-  });
+  window.addEventListener('load', () => document.getElementById('gatePassword').focus());
 }
 
-// ════════════════════════════════════════════════════════════════════
-//  CONFIGURATION
-// ════════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════
+   CONFIGURATION — replace with your Supabase credentials
+════════════════════════════════════════════════════ */
 const SUPABASE_URL      = 'https://umyppuonnuhmnarjziah.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVteXBwdW9ubnVobW5hcmp6aWFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMTYzMzYsImV4cCI6MjA5MzU5MjMzNn0.7ZtckQv3uHSFUZxFwK1rs_TqjNqZzyS_v5g2IneoRPQ';
-// ════════════════════════════════════════════════════════════════════
 
-// ── Goals Data ───────────────────────────────────────────────────────
+/* ════════════════════════════════════════════════════
+   GOALS DATA
+════════════════════════════════════════════════════ */
 const GOALS_DATA = [
   {
     id: 'SA', label: 'Strategic Alignment', icon: '🎯', color: '#4F868E',
@@ -410,7 +581,7 @@ const GOALS_DATA = [
         text: 'Complete a data audit of available workforce metrics from UCareer in partnership with HR and the HSRO Finance Analytics Team, and deliver a research workforce dashboard prototype that tracks current workforce composition, movement within the workforce, and identified hard-to-fill research positions in an AI-assisted manner.' },
       { id: 'PC-2', team: 'Communications',
         metric: { label: 'Outreach Events', target: 5 },
-        text: 'Increase public trust with at least 5 community or school outreach events reaching 150 individuals, and launch of a public research newsletter with a goal of 250 subscribers. Engagement tracked by newsletter open rates and story clicks. Sentiment tracked by surveys submitted to teachers at school events and sent to newsletter subscribers.' }
+        text: 'Increase public trust with at least 5 community or school outreach events reaching 150 individuals, and launch of a public research newsletter with a goal of 250 subscribers. Engagement tracked by newsletter open rates and story clicks.' }
     ]
   },
   {
@@ -423,7 +594,7 @@ const GOALS_DATA = [
         metric: { label: 'Agreements Signed', target: 5 },
         text: 'Establish agreements with at least five institutional partners and/or local life science companies to streamline experiential education placements for graduate students in the health sciences, with success measured by signed agreements and placements.' },
       { id: 'AQE-3', team: 'Research Space',
-        text: 'Advance the Research Park as a natural extension of the Health Sciences research campus by engaging Wintrobe Building investigators on relocation opportunities, building enthusiasm for the Research Park\'s culture of innovation, and delivering an updated investigator relocation plan for the Williams/Myriad space.' }
+        text: 'Advance the Research Park as a natural extension of the Health Sciences research campus by engaging Wintrobe Building investigators on relocation opportunities and delivering an updated investigator relocation plan for the Williams/Myriad space.' }
     ]
   },
   {
@@ -435,7 +606,7 @@ const GOALS_DATA = [
       { id: 'IRE-2', team: 'Operations/Finance',
         text: 'Modernize HSRO analytical infrastructure by integrating AI-enabled reporting tools and formalizing partnerships with the VPR Office and university data stewards to deliver centralized reporting products/dashboards that serve both health sciences and main campus research leadership.' },
       { id: 'IRE-3', team: 'BREO',
-        text: 'Partner with campus academic units to design and advance a biotechnology Master\'s program centered in the health sciences; deliverables include a defined curriculum framework, an identified program home, and a proposal submitted for review.' }
+        text: "Partner with campus academic units to design and advance a biotechnology Master's program centered in the health sciences; deliverables include a defined curriculum framework, an identified program home, and a proposal submitted for review." }
     ]
   },
   {
@@ -462,6 +633,8 @@ const STATUS_LABELS = {
 
 const updates = {};
 const openCards = new Set();
+let activeFilter = null;
+let searchQuery = '';
 
 const isConfigured = SUPABASE_URL !== '' && SUPABASE_ANON_KEY !== '';
 const sb = isConfigured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -472,10 +645,10 @@ function esc(t) {
 }
 function fmtDate(iso) {
   const d = new Date(iso);
-  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
-       + ' · ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+       + ' · ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
 }
-function goalStatus(gid) { const a = updates[gid]; return a && a.length ? a[0].status : 'not_started'; }
+function goalStatus(gid) { const a = updates[gid]; return (a && a.length) ? a[0].status : 'not_started'; }
 function latestMetric(gid) {
   const u = (updates[gid]||[]).find(u => u.metric_value !== null && u.metric_value !== undefined);
   return u ? u.metric_value : null;
@@ -493,29 +666,81 @@ async function fetchUpdates() {
 }
 
 function countStatuses() {
-  const c = { not_started:0, in_progress:0, on_track:0, completed:0, at_risk:0 };
-  GOALS_DATA.forEach(cat => cat.goals.forEach(g => { const s=goalStatus(g.id); c[s]=(c[s]||0)+1; }));
+  const c = { not_started:0, in_progress:0, on_track:0, completed:0, at_risk:0, total:0 };
+  GOALS_DATA.forEach(cat => cat.goals.forEach(g => {
+    const s = goalStatus(g.id); c[s]=(c[s]||0)+1; c.total++;
+  }));
   return c;
+}
+
+function updateRing(c) {
+  const done = c.on_track + c.completed;
+  const pct  = c.total > 0 ? Math.round((done / c.total) * 100) : 0;
+  const circ = 2 * Math.PI * 26;
+  const offset = circ - (pct / 100) * circ;
+  const arc = document.getElementById('ringArc');
+  if (arc) { arc.style.strokeDashoffset = offset; }
+  const pctEl = document.getElementById('ringPct');
+  const subEl = document.getElementById('ringPctSub');
+  if (pctEl) pctEl.textContent = pct + '%';
+  if (subEl) {
+    if (pct === 0) subEl.textContent = 'goals not started';
+    else if (pct === 100) subEl.textContent = 'all goals complete!';
+    else subEl.textContent = `${done} of ${c.total} on track / done`;
+  }
+}
+
+function buildCatNav() {
+  const nav = document.getElementById('catNav');
+  if (!nav) return;
+  nav.innerHTML = GOALS_DATA.map(cat => `
+    <a class="cat-nav-item" href="#cat-${cat.id}" onclick="highlightCat('${cat.id}')">
+      <div class="cat-nav-dot" style="background:${cat.color}"></div>
+      <div class="cat-nav-label">${cat.label}</div>
+      <div class="cat-nav-badge">${cat.goals.length}</div>
+    </a>`).join('');
+}
+
+function highlightCat(id) {
+  document.querySelectorAll('.cat-nav-item').forEach(el => el.classList.remove('active'));
+  const item = document.querySelector(`.cat-nav-item[href="#cat-${id}"]`);
+  if (item) item.classList.add('active');
+}
+
+function filterStatus(status, el) {
+  activeFilter = status;
+  document.querySelectorAll('.sp-row').forEach(r => r.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderDashboard();
+}
+
+function onSearch() {
+  searchQuery = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  renderDashboard();
 }
 
 function badgeHtml(status) {
   return `<span class="status-badge ${status}">${STATUS_LABELS[status]||'Not Started'}</span>`;
 }
 
-function metricBarHtml(goal, color) {
+function metricBlockHtml(goal, color) {
   if (!goal.metric) return '';
   const val = latestMetric(goal.id);
   const cur = val !== null ? val : 0;
   const { label, target } = goal.metric;
-  const pct = target > 0 ? Math.min(100, Math.round((cur/target)*100)) : 0;
+  const pct = target > 0 ? Math.min(100, Math.round((cur / target) * 100)) : 0;
   return `
-    <div class="metric-bar-wrap">
-      <div class="metric-bar-header">
-        <span class="metric-bar-label">${label}</span>
-        <span class="metric-bar-count">${cur} <span class="metric-bar-target">/ ${target}</span></span>
+    <div class="metric-block">
+      <div class="metric-top">
+        <div class="metric-label">${esc(label)}</div>
+        <div class="metric-nums">
+          <span class="metric-val">${cur}</span>
+          <span class="metric-of">/ ${target}</span>
+          <span class="metric-pct">(${pct}%)</span>
+        </div>
       </div>
-      <div class="metric-bar-bg">
-        <div class="metric-bar-fill" style="width:${pct}%;background:${color}"></div>
+      <div class="metric-track">
+        <div class="metric-fill" style="width:${pct}%; background:${color}"></div>
       </div>
     </div>`;
 }
@@ -526,19 +751,19 @@ function renderGoalCard(goal, catColor) {
   const latest = arr[0];
   const isOpen = openCards.has(goal.id);
 
-  let lastUpdateHtml = '<em>No updates yet</em>';
+  let lastUpdHtml = '<em>No updates yet</em>';
   if (latest) {
     const comment = latest.comment ? `"${esc(latest.comment)}" · ` : '';
-    lastUpdateHtml = `<span class="au">${esc(latest.author)}</span>: ${comment}${fmtDate(latest.created_at)}`;
+    lastUpdHtml = `<span class="upd-author">${esc(latest.author)}</span>: ${comment}${fmtDate(latest.created_at)}`;
   }
 
-  let histItems = '<div class="no-updates-msg">No updates logged yet</div>';
+  let histItems = `<div class="no-updates">No updates logged yet</div>`;
   if (arr.length) {
     histItems = arr.map(u => {
       const mTag = (u.metric_value !== null && u.metric_value !== undefined)
         ? `<span class="ui-metric">${esc(goal.metric ? goal.metric.label : 'Metric')}: ${u.metric_value}</span>` : '';
-      return `<div class="update-item">
-        <div class="update-item-meta">
+      return `<div class="upd-item">
+        <div class="upd-item-meta">
           <span class="ui-author">${esc(u.author)}</span>
           <span class="ui-date">${fmtDate(u.created_at)}</span>
           ${badgeHtml(u.status)} ${mTag}
@@ -548,23 +773,71 @@ function renderGoalCard(goal, catColor) {
     }).join('');
   }
 
-  return `<div class="goal-card" style="border-left-color:${catColor}" onclick="toggleCard('${goal.id}')">
-    <div class="goal-card-top">
-      <span class="goal-id">${goal.id}</span>
-      <span class="team-badge">${esc(goal.team)}</span>
-      ${badgeHtml(status)}
-    </div>
-    <p class="goal-text">${esc(goal.text)}</p>
-    ${metricBarHtml(goal, catColor)}
-    <div class="goal-footer">
-      <div class="last-update-txt">${lastUpdateHtml}</div>
-      <div class="expand-btn" id="ebtn-${goal.id}">${isOpen ? '▲ Hide' : `▼ History (${arr.length})`}</div>
-    </div>
-    <div class="update-history ${isOpen?'open':''}" id="hist-${goal.id}">
-      <div class="history-label">Update History</div>
-      ${histItems}
-    </div>
-  </div>`;
+  return `
+    <div class="goal-card" style="border-left-color:${catColor}" onclick="toggleCard('${goal.id}')">
+      <div class="goal-card-body">
+        <div class="goal-card-top">
+          <span class="goal-id">${goal.id}</span>
+          <span class="team-badge">${esc(goal.team)}</span>
+          ${badgeHtml(status)}
+        </div>
+        <p class="goal-text">${esc(goal.text)}</p>
+        ${metricBlockHtml(goal, catColor)}
+        <div class="goal-footer">
+          <div class="last-upd">${lastUpdHtml}</div>
+          <div class="expand-toggle" id="ebtn-${goal.id}">
+            ${isOpen ? '▲ Hide' : `▼ History (${arr.length})`}
+          </div>
+        </div>
+      </div>
+      <div class="history-panel ${isOpen?'open':''}" id="hist-${goal.id}">
+        <div class="history-header">Update History</div>
+        ${histItems}
+      </div>
+    </div>`;
+}
+
+function goalMatchesFilter(g) {
+  if (activeFilter && goalStatus(g.id) !== activeFilter) return false;
+  if (searchQuery) {
+    const haystack = [g.id, g.team, g.text, g.metric ? g.metric.label : ''].join(' ').toLowerCase();
+    if (!haystack.includes(searchQuery)) return false;
+  }
+  return true;
+}
+
+function renderDashboard() {
+  const c = countStatuses();
+  document.getElementById('sTotal').textContent     = c.total;
+  document.getElementById('sNotStarted').textContent = c.not_started;
+  document.getElementById('sInProgress').textContent = c.in_progress;
+  document.getElementById('sOnTrack').textContent    = c.on_track;
+  document.getElementById('sCompleted').textContent  = c.completed;
+  document.getElementById('sAtRisk').textContent     = c.at_risk;
+  updateRing(c);
+
+  let html = '';
+  let anyVisible = false;
+  GOALS_DATA.forEach(cat => {
+    const visible = cat.goals.filter(goalMatchesFilter);
+    if (!visible.length) return;
+    anyVisible = true;
+    html += `
+      <section class="cat-section" id="cat-${cat.id}">
+        <div class="cat-section-header" style="border-color:${cat.color}; color:${cat.color}">
+          <div class="cat-section-icon" style="background:${cat.color}1a">${cat.icon}</div>
+          <div class="cat-section-label">${cat.label}</div>
+          <div class="cat-section-count">${visible.length} goal${visible.length!==1?'s':''}</div>
+        </div>
+        <div class="goals-grid">${visible.map(g => renderGoalCard(g, cat.color)).join('')}</div>
+      </section>`;
+  });
+
+  if (!anyVisible) {
+    html = `<div class="empty-state">No goals match your current filter.</div>`;
+  }
+
+  document.getElementById('mainContent').innerHTML = html;
 }
 
 function toggleCard(gid) {
@@ -577,53 +850,38 @@ function toggleCard(gid) {
   btn.textContent = open ? '▲ Hide' : `▼ History (${(updates[gid]||[]).length})`;
 }
 
-function renderDashboard() {
-  const c = countStatuses();
-  document.getElementById('sNotStarted').textContent = c.not_started;
-  document.getElementById('sInProgress').textContent = c.in_progress;
-  document.getElementById('sOnTrack').textContent    = c.on_track;
-  document.getElementById('sCompleted').textContent  = c.completed;
-  document.getElementById('sAtRisk').textContent     = c.at_risk;
-
-  let html = '';
-  GOALS_DATA.forEach(cat => {
-    html += `<section class="category-section">
-      <div class="category-header" style="border-color:${cat.color};color:${cat.color}">
-        <span class="cat-icon">${cat.icon}</span>
-        <span class="cat-title">${cat.label}</span>
-        <span class="cat-count">${cat.goals.length} goal${cat.goals.length!==1?'s':''}</span>
-      </div>
-      <div class="goals-grid">${cat.goals.map(g => renderGoalCard(g, cat.color)).join('')}</div>
-    </section>`;
-  });
-  document.getElementById('mainContent').innerHTML = html;
-}
-
 async function sync() {
   const dot = document.getElementById('syncDot'), text = document.getElementById('syncText');
   dot.className = 'loading'; text.textContent = 'Syncing…';
   if (!isConfigured) {
     document.getElementById('noticeBanner').style.display = 'block';
-    renderDashboard(); dot.className = 'error'; text.textContent = 'Not connected · See SETUP.md'; return;
+    renderDashboard();
+    buildCatNav();
+    dot.className = 'error'; text.textContent = 'Not connected'; return;
   }
   const ok = await fetchUpdates();
   renderDashboard();
+  buildCatNav();
   if (ok) {
     dot.className = '';
     text.textContent = `Synced ${new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}`;
-  } else { dot.className = 'error'; text.textContent = 'Sync error — retrying…'; }
+  } else {
+    dot.className = 'error'; text.textContent = 'Sync error — retrying…';
+  }
 }
 
 async function downloadReport() {
   const btn = document.getElementById('downloadBtn');
-  btn.disabled = true; btn.textContent = '⏳ Preparing…';
+  btn.disabled = true; btn.textContent = 'Preparing…';
   try {
     let allUpdates = [];
     if (sb) {
       const { data, error } = await sb.from('goal_updates').select('*').order('created_at', { ascending: false });
       if (!error) allUpdates = data || [];
     } else {
-      GOALS_DATA.forEach(cat => cat.goals.forEach(g => (updates[g.id]||[]).forEach(u => allUpdates.push(u))));
+      GOALS_DATA.forEach(cat => cat.goals.forEach(g =>
+        (updates[g.id]||[]).forEach(u => allUpdates.push(u))
+      ));
       allUpdates.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
     }
 
@@ -632,7 +890,7 @@ async function downloadReport() {
     // Sheet 1: Summary
     const s1 = [['Goal ID','Category','Team','Current Status','Metric','Progress','Target','Last Updated By','Last Update Date','Latest Comment']];
     GOALS_DATA.forEach(cat => cat.goals.forEach(g => {
-      const gu = allUpdates.filter(u => u.goal_id === g.id);
+      const gu  = allUpdates.filter(u => u.goal_id === g.id);
       const lat = gu[0];
       const latM = gu.find(u => u.metric_value !== null && u.metric_value !== undefined);
       s1.push([
@@ -671,7 +929,7 @@ async function downloadReport() {
   } catch(e) {
     console.error(e); alert('Export failed. Please try again.');
   } finally {
-    btn.disabled = false; btn.textContent = '⬇ Download Report';
+    btn.disabled = false; btn.textContent = 'Download Report';
   }
 }
 
