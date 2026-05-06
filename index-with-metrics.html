@@ -87,6 +87,51 @@ body {
 }
 .btn-download:hover    { background: rgba(255,255,255,0.28); }
 .btn-download:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Auth Gate ───────────────────────────────── */
+#authGate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #F0F2F3;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.auth-gate-card {
+  background: #fff; border-radius: 12px;
+  padding: 48px 44px; max-width: 420px; width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+.auth-gate-logo {
+  display: inline-block; background: #BE0000; color: #fff;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 6px 14px; border-radius: 4px;
+  margin-bottom: 28px;
+}
+.auth-gate-card .lock-icon { font-size: 2.6rem; margin-bottom: 14px; }
+.auth-gate-card h2 {
+  font-size: 1.15rem; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; color: #1A1A1A; margin-bottom: 6px;
+}
+.auth-gate-card p { font-size: 0.85rem; color: #708E99; margin-bottom: 26px; line-height: 1.6; }
+.auth-gate-card input[type="password"] {
+  width: 100%; padding: 13px 16px; border: 2px solid #E2E6E6;
+  border-radius: 6px; font-family: inherit; font-size: 1rem;
+  letter-spacing: 0.12em; color: #1A1A1A; margin-bottom: 12px;
+  transition: border-color 0.2s; text-align: center;
+}
+.auth-gate-card input[type="password"]:focus { outline: none; border-color: #BE0000; }
+.auth-gate-card .btn-enter {
+  width: 100%; padding: 13px; background: #BE0000; color: #fff;
+  border: none; border-radius: 6px; font-family: inherit; font-size: 0.9rem;
+  font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.15s;
+}
+.auth-gate-card .btn-enter:hover    { background: #890000; }
+.auth-gate-card .btn-enter:disabled { background: #939598; cursor: not-allowed; }
+.auth-gate-error {
+  color: #BE0000; font-size: 0.82rem; margin-top: 10px;
+  min-height: 20px; font-weight: 600;
+}
 .sync-info { font-size: 0.73rem; opacity: 0.85; letter-spacing: 0.03em; }
 #syncDot {
   display: inline-block;
@@ -241,6 +286,20 @@ body {
 </head>
 <body>
 
+<!-- ══ AUTH GATE ════════════════════════════════════════════════════ -->
+<div id="authGate">
+  <div class="auth-gate-card">
+    <div class="auth-gate-logo">HSRO &nbsp;·&nbsp; FY27</div>
+    <div class="lock-icon">🔒</div>
+    <h2>Goals Dashboard</h2>
+    <p>This dashboard contains confidential information.<br>Enter the team password to continue.</p>
+    <input type="password" id="gatePassword" placeholder="••••••••••"
+           onkeydown="if(event.key==='Enter') gateAuthenticate()" autocomplete="current-password" />
+    <button class="btn-enter" id="gateBtn" onclick="gateAuthenticate()">View Dashboard</button>
+    <div class="auth-gate-error" id="gateError"></div>
+  </div>
+</div>
+
 <header class="site-header">
   <div class="header-left">
     <h1>HSRO FY27 Goals Dashboard</h1>
@@ -283,6 +342,48 @@ body {
 </footer>
 
 <script>
+// ════════════════════════════════════════════════════════════════════
+//  PASSWORD GATE
+//  Same SHA-256 hash system as admin portal.
+//  Default password: HSRO2027!
+//  To change: generate a new SHA-256 hash and replace the value below.
+// ════════════════════════════════════════════════════════════════════
+const GATE_PASSWORD_HASH = 'abab999561d01dd4edc25ae253d8c7f5cd99261fcf41b05653c7f12af55c25fb';
+
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function gateAuthenticate() {
+  const btn = document.getElementById('gateBtn');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  const val  = document.getElementById('gatePassword').value;
+  const hash = await hashStr(val);
+  btn.disabled = false; btn.textContent = 'View Dashboard';
+
+  if (hash === GATE_PASSWORD_HASH) {
+    sessionStorage.setItem('hsro_auth', '1');
+    document.getElementById('authGate').style.display = 'none';
+  } else {
+    const err = document.getElementById('gateError');
+    err.textContent = 'Incorrect password. Please try again.';
+    document.getElementById('gatePassword').value = '';
+    document.getElementById('gatePassword').focus();
+    setTimeout(() => { err.textContent = ''; }, 4000);
+  }
+}
+
+// Check if already authenticated this session
+if (sessionStorage.getItem('hsro_auth') === '1') {
+  document.getElementById('authGate').style.display = 'none';
+} else {
+  // Focus password field on load
+  window.addEventListener('load', () => {
+    document.getElementById('gatePassword').focus();
+  });
+}
+
 // ════════════════════════════════════════════════════════════════════
 //  CONFIGURATION
 // ════════════════════════════════════════════════════════════════════
