@@ -242,46 +242,47 @@ body {
 .notice-banner code { background: var(--gray1); padding: 1px 5px; border-radius: 3px; font-size: 0.78rem; }
 
 /* ── Content ─────────────────────────────── */
-.content { padding: 20px 28px 48px; }
+.content { padding: 16px 20px 48px; }
 
 /* Category section */
-.cat-section { margin-bottom: 40px; scroll-margin-top: 68px; }
+.cat-section { margin-bottom: 28px; scroll-margin-top: 68px; }
 .cat-section-header {
-  display: flex; align-items: center; gap: 12px;
-  margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2.5px solid;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2.5px solid;
 }
-.cat-section-icon { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; }
-.cat-section-label { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; flex: 1; }
-.cat-section-count { font-size: 0.72rem; color: var(--gray2); background: var(--gray0); padding: 3px 10px; border-radius: 20px; font-weight: 700; }
+.cat-section-icon { width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; }
+.cat-section-label { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; flex: 1; }
+.cat-section-count { font-size: 0.66rem; color: var(--gray2); background: var(--gray0); padding: 2px 8px; border-radius: 20px; font-weight: 700; }
 
-/* Goal grid */
-.goals-grid { display: grid; gap: 12px; }
+/* Goal grid — 2 columns */
+.goals-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 
 /* Goal card */
 .goal-card {
-  background: #fff; border-radius: 10px;
-  border: 1px solid var(--gray1); border-left: 5px solid;
+  background: #fff; border-radius: 8px;
+  border: 1px solid var(--gray1); border-left: 4px solid;
   overflow: hidden; cursor: pointer;
   transition: box-shadow 0.18s, transform 0.12s;
+  display: flex; flex-direction: column;
 }
-.goal-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.09); transform: translateY(-1px); }
+.goal-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.09); transform: translateY(-1px); }
 
-.goal-card-body { padding: 16px 20px 14px; }
+.goal-card-body { padding: 12px 14px 10px; flex: 1; }
 .goal-card-top {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 10px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 8px; flex-wrap: wrap;
 }
 .goal-id {
-  font-size: 0.64rem; font-weight: 700; color: var(--gray2);
+  font-size: 0.6rem; font-weight: 700; color: var(--gray2);
   letter-spacing: 0.08em; text-transform: uppercase;
-  background: var(--gray0); padding: 3px 8px; border-radius: 4px;
+  background: var(--gray0); padding: 2px 6px; border-radius: 4px;
 }
 .team-badge {
-  font-size: 0.68rem; color: var(--gray2); background: var(--gray0);
-  padding: 3px 10px; border-radius: 20px; font-weight: 600;
+  font-size: 0.64rem; color: var(--gray2); background: var(--gray0);
+  padding: 2px 8px; border-radius: 20px; font-weight: 600;
 }
 .status-badge {
-  font-size: 0.64rem; padding: 3px 10px; border-radius: 20px;
+  font-size: 0.6rem; padding: 2px 8px; border-radius: 20px;
   font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
   margin-left: auto;
 }
@@ -291,44 +292,50 @@ body {
 .status-badge.completed   { background: #DFF6F6; color: #1E8A8A; }
 .status-badge.at_risk     { background: #FDECEA; color: #BE0000; }
 
-.goal-text { font-size: 0.845rem; color: #333; line-height: 1.65; margin-bottom: 14px; }
+/* Clamped text — expands when card is open */
+.goal-text {
+  font-size: 0.8rem; color: #333; line-height: 1.55; margin-bottom: 10px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.goal-card.expanded .goal-text { display: block; overflow: visible; }
 
 /* Metric visualization */
 .metric-block {
-  margin-bottom: 14px; padding: 12px 14px;
-  background: var(--gray0); border-radius: 8px;
+  margin-bottom: 10px; padding: 8px 10px;
+  background: var(--gray0); border-radius: 6px;
 }
 .metric-top {
-  display: flex; justify-content: space-between; align-items: flex-end;
-  margin-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 5px;
 }
 .metric-label {
-  font-size: 0.64rem; font-weight: 700; text-transform: uppercase;
+  font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.07em; color: var(--gray2);
 }
-.metric-nums { display: flex; align-items: baseline; gap: 4px; }
-.metric-val { font-size: 1.05rem; font-weight: 700; color: var(--dark); }
-.metric-of { font-size: 0.72rem; color: var(--gray3); }
-.metric-pct { font-size: 0.72rem; color: var(--gray3); }
-.metric-track { height: 6px; background: var(--gray1); border-radius: 99px; overflow: hidden; }
+.metric-nums { display: flex; align-items: baseline; gap: 3px; }
+.metric-val { font-size: 0.9rem; font-weight: 700; color: var(--dark); }
+.metric-of { font-size: 0.66rem; color: var(--gray3); }
+.metric-pct { font-size: 0.66rem; color: var(--gray3); }
+.metric-track { height: 5px; background: var(--gray1); border-radius: 99px; overflow: hidden; }
 .metric-fill { height: 100%; border-radius: 99px; transition: width 0.7s ease; min-width: 3px; }
 
 /* Goal footer */
 .goal-footer {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; flex-wrap: wrap;
+  gap: 8px; flex-wrap: wrap;
 }
-.last-upd { font-size: 0.75rem; color: var(--gray3); font-style: italic; flex: 1; line-height: 1.5; }
+.last-upd { font-size: 0.68rem; color: var(--gray3); font-style: italic; flex: 1; line-height: 1.45; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .last-upd .upd-author { color: var(--teal); font-weight: 700; font-style: normal; }
 .expand-toggle {
-  font-size: 0.7rem; color: var(--teal2); font-weight: 700;
+  font-size: 0.64rem; color: var(--teal2); font-weight: 700;
   letter-spacing: 0.03em; flex-shrink: 0; user-select: none;
   display: flex; align-items: center; gap: 4px;
 }
 
 /* History panel */
 .history-panel {
-  display: none; padding: 0 20px 16px; border-top: 1px solid var(--gray0);
+  display: none; padding: 0 14px 12px; border-top: 1px solid var(--gray0);
 }
 .history-panel.open { display: block; }
 .history-header {
@@ -350,6 +357,85 @@ body {
 }
 .ui-comment { font-size: 0.8rem; color: #555; line-height: 1.5; margin-top: 4px; }
 .no-updates { font-size: 0.78rem; color: #B0BAC0; font-style: italic; text-align: center; padding: 12px 0; }
+.ui-edit-btn {
+  margin-left: auto; font-size: 0.62rem; padding: 2px 8px; border-radius: 4px;
+  background: #fff; border: 1px solid var(--gray1); color: var(--gray2);
+  cursor: pointer; font-family: inherit; font-weight: 600;
+  transition: all 0.12s; flex-shrink: 0;
+}
+.ui-edit-btn:hover { background: var(--gray1); color: var(--dark); }
+
+/* ── Edit Modal ──────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.35);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.modal-overlay.hidden { display: none; }
+.modal-card {
+  background: #fff; border-radius: 12px; padding: 28px 30px;
+  width: 100%; max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.modal-title {
+  font-size: 0.95rem; font-weight: 700; letter-spacing: 0.03em;
+  text-transform: uppercase; color: var(--red);
+  margin-bottom: 4px;
+}
+.modal-subtitle { font-size: 0.76rem; color: var(--gray2); margin-bottom: 20px; }
+.modal-field { margin-bottom: 14px; }
+.modal-field label {
+  display: block; font-size: 0.66rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--gray2); margin-bottom: 5px;
+}
+.modal-field input[type="text"],
+.modal-field input[type="number"],
+.modal-field textarea {
+  width: 100%; padding: 9px 12px; border: 1.5px solid var(--gray1);
+  border-radius: 6px; font-family: inherit; font-size: 0.85rem;
+  color: var(--dark); transition: border-color 0.2s;
+}
+.modal-field input:focus, .modal-field textarea:focus {
+  outline: none; border-color: var(--teal);
+}
+.modal-field textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+.modal-status-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px;
+}
+.mso { position: relative; }
+.mso input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+.mso label {
+  display: flex; align-items: center; justify-content: center;
+  padding: 7px 6px; border-radius: 6px; border: 1.5px solid var(--gray1);
+  cursor: pointer; font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.12s;
+  user-select: none;
+}
+.mso.s-not-started input:checked + label { background: #ECEFF1; border-color: var(--gray3); color: #546E7A; }
+.mso.s-in-progress input:checked + label { background: #E1EEF0; border-color: var(--teal); color: #3A6870; }
+.mso.s-on-track    input:checked + label { background: #EAF5E2; border-color: var(--green); color: #3E7A22; }
+.mso.s-completed   input:checked + label { background: #DFF6F6; border-color: var(--teal2); color: #1E8A8A; }
+.mso.s-at-risk     input:checked + label { background: #FDECEA; border-color: var(--red); color: var(--red); }
+.mso label:hover { background: var(--gray0); border-color: var(--gray2); }
+.modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+.modal-save {
+  flex: 1; padding: 11px; background: var(--red); color: #fff;
+  border: none; border-radius: 7px; font-family: inherit; font-size: 0.85rem;
+  font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.15s;
+}
+.modal-save:hover    { background: var(--red2); }
+.modal-save:disabled { background: var(--gray3); cursor: not-allowed; }
+.modal-cancel {
+  padding: 11px 20px; background: #fff; color: var(--gray2);
+  border: 1.5px solid var(--gray1); border-radius: 7px; font-family: inherit;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+}
+.modal-cancel:hover { border-color: var(--gray2); color: var(--dark); }
+.modal-msg { font-size: 0.78rem; text-align: center; margin-top: 10px; min-height: 18px; font-weight: 600; }
+.modal-msg.success { color: #3E7A22; }
+.modal-msg.error   { color: var(--red); }
 
 /* Loading */
 .loading-block {
@@ -378,6 +464,9 @@ body {
 .site-footer a { color: var(--teal); text-decoration: none; }
 
 /* ── Responsive ─────────────────────────── */
+@media (max-width: 900px) {
+  .goals-grid { grid-template-columns: 1fr; }
+}
 @media (max-width: 768px) {
   .sidebar { display: none; }
   .topbar  { padding: 12px 16px; }
@@ -518,6 +607,46 @@ body {
   </div><!-- /.main -->
 
 </div><!-- /.app -->
+
+<!-- ══ EDIT MODAL ══════════════════════════════════ -->
+<div class="modal-overlay hidden" id="editModal" onclick="closeModalOnBg(event)">
+  <div class="modal-card">
+    <div class="modal-title">Edit Update</div>
+    <div class="modal-subtitle" id="modalSubtitle"></div>
+
+    <div class="modal-field">
+      <label>Your Name</label>
+      <input type="text" id="mAuthor" placeholder="First and Last Name" />
+    </div>
+
+    <div class="modal-field">
+      <label>Status</label>
+      <div class="modal-status-grid">
+        <div class="mso s-not-started"><input type="radio" name="mStatus" id="ms-ns" value="not_started"><label for="ms-ns">Not Started</label></div>
+        <div class="mso s-in-progress"><input type="radio" name="mStatus" id="ms-ip" value="in_progress"><label for="ms-ip">In Progress</label></div>
+        <div class="mso s-on-track">   <input type="radio" name="mStatus" id="ms-ot" value="on_track">   <label for="ms-ot">On Track</label></div>
+        <div class="mso s-completed">  <input type="radio" name="mStatus" id="ms-co" value="completed">  <label for="ms-co">Completed</label></div>
+        <div class="mso s-at-risk">    <input type="radio" name="mStatus" id="ms-ar" value="at_risk">    <label for="ms-ar">At Risk</label></div>
+      </div>
+    </div>
+
+    <div class="modal-field" id="mMetricField" style="display:none">
+      <label id="mMetricLabel">Metric Value</label>
+      <input type="number" id="mMetricVal" min="0" placeholder="0" />
+    </div>
+
+    <div class="modal-field">
+      <label>Comment <span style="font-weight:400;text-transform:none">(optional)</span></label>
+      <textarea id="mComment" placeholder="Describe progress, blockers, or next steps…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-save" id="mSaveBtn" onclick="saveEdit()">Save Changes</button>
+    </div>
+    <div class="modal-msg" id="mMsg"></div>
+  </div>
+</div>
 
 <script>
 /* ════════════════════════════════════════════════════
@@ -763,11 +892,12 @@ function renderGoalCard(goal, catColor) {
     histItems = arr.map(u => {
       const mTag = (u.metric_value !== null && u.metric_value !== undefined)
         ? `<span class="ui-metric">${esc(goal.metric ? goal.metric.label : 'Metric')}: ${u.metric_value}</span>` : '';
+      const editBtn = sb ? `<button class="ui-edit-btn" onclick="event.stopPropagation(); openEditModal('${u.id}','${goal.id}')">✏ Edit</button>` : '';
       return `<div class="upd-item">
         <div class="upd-item-meta">
           <span class="ui-author">${esc(u.author)}</span>
           <span class="ui-date">${fmtDate(u.created_at)}</span>
-          ${badgeHtml(u.status)} ${mTag}
+          ${badgeHtml(u.status)} ${mTag} ${editBtn}
         </div>
         ${u.comment ? `<div class="ui-comment">${esc(u.comment)}</div>` : ''}
       </div>`;
@@ -845,9 +975,11 @@ function toggleCard(gid) {
   openCards.has(gid) ? openCards.delete(gid) : openCards.add(gid);
   const panel = document.getElementById(`hist-${gid}`);
   const btn   = document.getElementById(`ebtn-${gid}`);
+  const card  = panel ? panel.closest('.goal-card') : null;
   if (!panel || !btn) return;
   const open = openCards.has(gid);
   panel.classList.toggle('open', open);
+  if (card) card.classList.toggle('expanded', open);
   btn.textContent = open ? '▲ Hide' : `▼ History (${(updates[gid]||[]).length})`;
 }
 
@@ -932,6 +1064,87 @@ async function downloadReport() {
   } finally {
     btn.disabled = false; btn.textContent = 'Download Report';
   }
+}
+
+/* ════════════════════════════════════════════════════
+   EDIT MODAL
+════════════════════════════════════════════════════ */
+let editingId = null;
+let editingGoalId = null;
+
+async function openEditModal(updateId, goalId) {
+  if (!sb) return;
+  editingId = updateId;
+  editingGoalId = goalId;
+
+  const { data, error } = await sb.from('goal_updates').select('*').eq('id', updateId).single();
+  if (error || !data) { alert('Could not load that update.'); return; }
+
+  const goal = GOAL_MAP[goalId];
+  document.getElementById('modalSubtitle').textContent = `${goalId} · ${goal ? goal.team : ''}`;
+
+  document.getElementById('mAuthor').value = data.author || '';
+
+  const radio = document.querySelector(`input[name="mStatus"][value="${data.status}"]`);
+  if (radio) radio.checked = true;
+
+  if (goal && goal.metric) {
+    document.getElementById('mMetricLabel').textContent = goal.metric.label;
+    document.getElementById('mMetricVal').value = (data.metric_value !== null && data.metric_value !== undefined) ? data.metric_value : '';
+    document.getElementById('mMetricField').style.display = 'block';
+  } else {
+    document.getElementById('mMetricField').style.display = 'none';
+  }
+
+  document.getElementById('mComment').value = data.comment || '';
+  document.getElementById('mMsg').textContent = '';
+  document.getElementById('editModal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.add('hidden');
+  editingId = null; editingGoalId = null;
+}
+
+function closeModalOnBg(e) {
+  if (e.target === document.getElementById('editModal')) closeModal();
+}
+
+async function saveEdit() {
+  const author  = document.getElementById('mAuthor').value.trim();
+  const statusEl = document.querySelector('input[name="mStatus"]:checked');
+  const comment = document.getElementById('mComment').value.trim();
+  const metricRaw = document.getElementById('mMetricVal').value;
+  const goal = GOAL_MAP[editingGoalId];
+
+  if (!author)   { showMMsg('Please enter your name.', 'error'); return; }
+  if (!statusEl) { showMMsg('Please select a status.', 'error'); return; }
+
+  const metricValue = (goal && goal.metric && metricRaw !== '') ? parseFloat(metricRaw) : null;
+
+  const btn = document.getElementById('mSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  try {
+    const { error } = await sb.from('goal_updates').update({
+      author, status: statusEl.value,
+      comment: comment || null,
+      metric_value: metricValue
+    }).eq('id', editingId);
+    if (error) throw error;
+    showMMsg('Saved!', 'success');
+    setTimeout(() => { closeModal(); sync(); }, 800);
+  } catch(e) {
+    console.error(e);
+    showMMsg('Error saving: ' + (e.message || 'Unknown error'), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Changes';
+  }
+}
+
+function showMMsg(text, type) {
+  const el = document.getElementById('mMsg');
+  el.textContent = text; el.className = 'modal-msg ' + type;
 }
 
 sync();
