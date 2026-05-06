@@ -155,6 +155,25 @@ body {
 .ri-status-badge.at_risk     { background: #FDECEA; color: #BE0000; }
 .ri-comment { font-size: 0.8rem; color: #555; line-height: 1.5; font-style: italic; }
 .no-recent { font-size: 0.82rem; color: #B0BAC0; font-style: italic; text-align: center; padding: 16px 0; }
+.edit-btn {
+  font-size: 0.62rem; padding: 2px 7px; border-radius: 4px;
+  background: #F0F2F3; border: 1px solid #E2E6E6; color: #708E99;
+  cursor: pointer; font-family: inherit; font-weight: 600;
+  transition: all 0.15s; margin-left: auto;
+}
+.edit-btn:hover { background: #E2E6E6; color: #1A1A1A; }
+.edit-mode-banner {
+  background: #E8F4F5; border: 2px solid #4F868E; border-radius: 8px;
+  padding: 12px 16px; margin-bottom: 18px; display: none;
+  font-size: 0.84rem; color: #4F868E; font-weight: 600; line-height: 1.5;
+}
+.btn-cancel-edit {
+  width: 100%; padding: 10px; background: #fff; color: #708E99;
+  border: 2px solid #E2E6E6; border-radius: 6px; font-family: inherit;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  margin-top: 8px; transition: all 0.15s; display: none;
+}
+.btn-cancel-edit:hover { border-color: #708E99; color: #1A1A1A; }
 
 /* ── Config notice ───────────────────────────── */
 .config-notice {
@@ -211,7 +230,10 @@ body {
   <div class="portal-grid">
     <!-- Update form -->
     <div class="form-card">
-      <h2>Log a Goal Update</h2>
+      <h2 id="formTitle">Log a Goal Update</h2>
+      <div class="edit-mode-banner" id="editBanner">
+        ✏ Editing a previous entry — update the fields below and click Save.
+      </div>
 
       <div class="form-group">
         <label>Your Name</label>
@@ -257,6 +279,7 @@ body {
       </div>
 
       <button class="btn-submit" id="submitBtn" onclick="submitUpdate()">Save Update</button>
+      <button class="btn-cancel-edit" id="cancelEditBtn" onclick="cancelEdit()">✕ Cancel Edit</button>
       <div class="submit-msg" id="submitMsg"></div>
     </div>
 
@@ -351,6 +374,8 @@ const STATUS_LABELS = {
 const isConfigured = SUPABASE_URL !== '' && SUPABASE_ANON_KEY !== '';
 const sb = isConfigured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
+let currentEditId = null; // tracks which update row we're editing
+
 function esc(t) {
   if (!t && t !== 0) return '';
   return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -435,6 +460,77 @@ function onGoalChange() {
   }
 }
 
+async function editUpdate(id) {
+  if (!sb) return;
+  // Fetch the specific row
+  const { data, error } = await sb.from('goal_updates').select('*').eq('id', id).single();
+  if (error || !data) { alert('Could not load that update. Please try again.'); return; }
+
+  // Find which category this goal belongs to
+  let foundCat = null, foundGoal = null;
+  GOALS_DATA.forEach(cat => {
+    const g = cat.goals.find(g => g.id === data.goal_id);
+    if (g) { foundCat = cat; foundGoal = g; }
+  });
+  if (!foundCat || !foundGoal) { alert('Could not match goal — it may have been removed.'); return; }
+
+  // Populate category dropdown
+  const catSel = document.getElementById('catSelect');
+  catSel.value = foundCat.id;
+  onCatChange();
+
+  // Populate goal dropdown
+  const goalSel = document.getElementById('goalSelect');
+  goalSel.value = data.goal_id;
+  onGoalChange();
+
+  // Populate author
+  document.getElementById('authorInput').value = data.author || '';
+
+  // Populate status radio
+  const radio = document.querySelector(`input[name="status"][value="${data.status}"]`);
+  if (radio) radio.checked = true;
+
+  // Populate metric
+  if (foundGoal.metric && data.metric_value !== null && data.metric_value !== undefined) {
+    document.getElementById('metricInput').value = data.metric_value;
+  }
+
+  // Populate comment
+  document.getElementById('commentInput').value = data.comment || '';
+
+  // Switch to edit mode UI
+  currentEditId = id;
+  document.getElementById('formTitle').textContent = 'Edit Update';
+  document.getElementById('editBanner').style.display = 'block';
+  document.getElementById('cancelEditBtn').style.display = 'block';
+  document.getElementById('submitBtn').textContent = 'Save Changes';
+
+  // Scroll form into view
+  document.getElementById('formTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelEdit() {
+  currentEditId = null;
+  document.getElementById('formTitle').textContent = 'Log a Goal Update';
+  document.getElementById('editBanner').style.display = 'none';
+  document.getElementById('cancelEditBtn').style.display = 'none';
+  document.getElementById('submitBtn').textContent = 'Save Update';
+
+  // Reset form fields
+  document.getElementById('authorInput').value = '';
+  document.getElementById('catSelect').value = '';
+  document.getElementById('goalSelect').innerHTML = '<option value="">— Select a goal —</option>';
+  document.getElementById('goalSelect').disabled = true;
+  document.getElementById('goalPreview').style.display = 'none';
+  document.getElementById('metricBox').style.display = 'none';
+  document.getElementById('metricInput').value = '';
+  document.getElementById('commentInput').value = '';
+  const checked = document.querySelector('input[name="status"]:checked');
+  if (checked) checked.checked = false;
+  document.getElementById('submitMsg').textContent = '';
+}
+
 async function submitUpdate() {
   const author   = document.getElementById('authorInput').value.trim();
   const goalId   = document.getElementById('goalSelect').value;
@@ -463,24 +559,33 @@ async function submitUpdate() {
   document.getElementById('submitMsg').textContent = '';
 
   try {
-    const { error } = await sb.from('goal_updates').insert({
-      goal_id: goalId, goal_label: goalLabel, category: catLabel,
-      status, comment: comment || null, author,
-      metric_value: metricValue
-    });
+    let error;
+    if (currentEditId) {
+      // UPDATE existing row
+      ({ error } = await sb.from('goal_updates').update({
+        goal_id: goalId, goal_label: goalLabel, category: catLabel,
+        status, comment: comment || null, author,
+        metric_value: metricValue
+      }).eq('id', currentEditId));
+    } else {
+      // INSERT new row
+      ({ error } = await sb.from('goal_updates').insert({
+        goal_id: goalId, goal_label: goalLabel, category: catLabel,
+        status, comment: comment || null, author,
+        metric_value: metricValue
+      }));
+    }
     if (error) throw error;
 
-    showMsg('✓ Update saved successfully!', 'success');
-    document.getElementById('commentInput').value = '';
-    document.getElementById('metricInput').value = '';
-    const checked = document.querySelector('input[name="status"]:checked');
-    if (checked) checked.checked = false;
+    showMsg(currentEditId ? '✓ Update edited successfully!' : '✓ Update saved successfully!', 'success');
+    cancelEdit();
     loadRecentUpdates();
   } catch(e) {
     console.error(e);
-    showMsg('Error saving update: ' + (e.message || 'Unknown error'), 'error');
+    showMsg('Error saving: ' + (e.message || 'Unknown error'), 'error');
   } finally {
-    btn.disabled = false; btn.textContent = 'Save Update';
+    btn.disabled = false;
+    btn.textContent = currentEditId ? 'Save Changes' : 'Save Update';
   }
 }
 
@@ -512,6 +617,7 @@ async function loadRecentUpdates() {
           <span class="ri-status-badge ${u.status}">${STATUS_LABELS[u.status]||u.status}</span>
           ${metricTag}
           <span class="ri-date">${dateStr}</span>
+          <button class="edit-btn" onclick="editUpdate('${u.id}')">✏ Edit</button>
         </div>
         ${u.comment ? `<div class="ri-comment">"${esc(u.comment)}"</div>` : ''}
       </div>`;
