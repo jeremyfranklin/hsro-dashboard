@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSRO Goals — Update Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Century Gothic', 'AppleGothic', 'Trebuchet MS', Arial, sans-serif;
+  background: #F0F2F3;
+  color: #1A1A1A;
+  min-height: 100vh;
+}
+
+/* ── Header ─────────────────────────────────── */
+.site-header {
+  background: #BE0000;
+  color: #fff;
+  padding: 20px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+.site-header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.site-header .subtitle {
+  font-size: 0.82rem;
+  opacity: 0.85;
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+}
+.btn-back {
+  background: #fff;
+  color: #BE0000;
+  padding: 8px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.btn-back:hover { background: #E2E6E6; }
+
+/* ══ AUTH SCREEN ═════════════════════════════ */
+#authScreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px);
+  padding: 40px 20px;
+}
+.auth-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 42px 44px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+.auth-card .lock-icon {
+  font-size: 2.8rem;
+  margin-bottom: 16px;
+}
+.auth-card h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1A1A1A;
+  margin-bottom: 8px;
+}
+.auth-card p {
+  font-size: 0.85rem;
+  color: #708E99;
+  margin-bottom: 26px;
+  line-height: 1.6;
+}
+.auth-card input[type="password"] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #E2E6E6;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: #1A1A1A;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+  text-align: center;
+}
+.auth-card input[type="password"]:focus {
+  outline: none;
+  border-color: #BE0000;
+}
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+  background: #BE0000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: #890000; }
+.btn-primary:disabled { background: #939598; cursor: not-allowed; }
+.auth-error {
+  color: #BE0000;
+  font-size: 0.82rem;
+  margin-top: 10px;
+  min-height: 20px;
+  font-weight: 600;
+}
+
+/* ══ ADMIN PORTAL ════════════════════════════ */
+#adminPortal { display: none; padding: 28px 36px 60px; max-width: 1100px; margin: 0 auto; }
+
+.portal-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Form card ───────────────────────────────── */
+.form-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 30px 32px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+.form-card h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #BE0000;
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #E2E6E6;
+}
+
+.form-group { margin-bottom: 18px; }
+.form-group label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #708E99;
+  margin-bottom: 6px;
+}
+.form-group input[type="text"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 2px solid #E2E6E6;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  color: #1A1A1A;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+.form-group input[type="text"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4F868E;
+}
+.form-group textarea {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.6;
+}
+.goal-preview-box {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #F0F2F3;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  color: #555;
+  line-height: 1.5;
+  display: none;
+}
+
+/* Status radio grid */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+.status-opt {
+  position: relative;
+}
+.status-opt input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0; height: 0;
+}
+.status-opt label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 8px;
+  border-radius: 6px;
+  border: 2px solid #E2E6E6;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  user-select: none;
+}
+.status-opt input:checked + label {
+  border-width: 2px;
+}
+/* Per-status selected colors */
+.status-opt.s-not-started input:checked + label { background: #ECEFF1; border-color: #939598; color: #546E7A; }
+.status-opt.s-in-progress input:checked + label { background: #E8F4F5; border-color: #4F868E; color: #4F868E; }
+.status-opt.s-on-track    input:checked + label { background: #EDF7E6; border-color: #6CC24A; color: #4A8A33; }
+.status-opt.s-completed   input:checked + label { background: #E4F8F8; border-color: #3ABFC0; color: #2A9191; }
+.status-opt.s-at-risk     input:checked + label { background: #FDECEA; border-color: #BE0000; color: #BE0000; }
+.status-opt label:hover   { background: #F0F2F3; border-color: #708E99; }
+
+/* Submit button */
+.btn-submit {
+  width: 100%;
+  padding: 13px;
+  background: #BE0000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background 0.15s;
+}
+.btn-submit:hover    { background: #890000; }
+.btn-submit:disabled { background: #939598; cursor: not-allowed; }
+
+.submit-msg {
+  margin-top: 12px;
+  font-size: 0.84rem;
+  text-align: center;
+  min-height: 20px;
+  font-weight: 600;
+}
+.submit-msg.success { color: #4A8A33; }
+.submit-msg.error   { color: #BE0000; }
+
+/* ── Recent updates sidebar ──────────────────── */
+.recent-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 26px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+.recent-card h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #708E99;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #E2E6E6;
+}
+.recent-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #F0F2F3;
+}
+.recent-item:last-child { border-bottom: none; }
+.ri-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+.ri-goal-id {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #4F868E;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.ri-author { font-size: 0.78rem; font-weight: 700; color: #1A1A1A; }
+.ri-date   { font-size: 0.7rem; color: #939598; margin-left: auto; }
+.ri-status-badge {
+  font-size: 0.62rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ri-status-badge.not_started { background: #ECEFF1; color: #708E99; }
+.ri-status-badge.in_progress { background: #E8F4F5; color: #4F868E; }
+.ri-status-badge.on_track    { background: #EDF7E6; color: #4A8A33; }
+.ri-status-badge.completed   { background: #E4F8F8; color: #2A9191; }
+.ri-status-badge.at_risk     { background: #FDECEA; color: #BE0000; }
+.ri-comment {
+  font-size: 0.8rem;
+  color: #555;
+  line-height: 1.5;
+  font-style: italic;
+}
+.no-recent {
+  font-size: 0.82rem;
+  color: #B0BAC0;
+  font-style: italic;
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* ── Not-configured notice ───────────────────── */
+.config-notice {
+  background: #FFF8E7;
+  border: 1px solid #FFB81D;
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.config-notice code {
+  background: #E2E6E6;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+/* ── Footer ─────────────────────────────────── */
+.site-footer {
+  text-align: center;
+  padding: 22px 20px;
+  color: #939598;
+  font-size: 0.75rem;
+  border-top: 1px solid #E2E6E6;
+  background: #fff;
+  letter-spacing: 0.03em;
+}
+.site-footer a { color: #4F868E; text-decoration: none; }
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 760px) {
+  .site-header { padding: 16px 18px; }
+  .site-header h1 { font-size: 1.1rem; }
+  #adminPortal { padding: 20px 18px 48px; }
+  .portal-grid { grid-template-columns: 1fr; }
+  .recent-card { margin-top: 4px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div>
+    <h1>✏ HSRO Goals — Update Portal</h1>
+    <div class="subtitle">Health Research Office &nbsp;·&nbsp; Fiscal Year 2027</div>
+  </div>
+  <a href="index.html" class="btn-back">← Dashboard</a>
+</header>
+
+<!-- ══ AUTH SCREEN ════════════════════════════════════════════════ -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="lock-icon">🔒</div>
+    <h2>Team Access</h2>
+    <p>Enter the shared team password to log goal updates and comments.</p>
+    <input type="password" id="pwdInput" placeholder="••••••••••"
+           onkeydown="if(event.key==='Enter') authenticate()" autocomplete="current-password" />
+    <button class="btn-primary" onclick="authenticate()">Enter Portal</button>
+    <div class="auth-error" id="authError"></div>
+  </div>
+</div>
+
+<!-- ══ ADMIN PORTAL ═══════════════════════════════════════════════ -->
+<div id="adminPortal">
+  <div id="configNotice" class="config-notice" style="display:none">
+    <strong>⚙️ Database not connected.</strong> Updates cannot be saved until you configure Supabase.
+    Follow the steps in <code>SETUP.md</code>, then update <code>SUPABASE_URL</code> and
+    <code>SUPABASE_ANON_KEY</code> at the top of both HTML files.
+  </div>
+
+  <div class="portal-grid">
+    <!-- Update form -->
+    <div class="form-card">
+      <h2>Log a Goal Update</h2>
+
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="authorInput" placeholder="First and Last Name" autocomplete="name" />
+      </div>
+
+      <div class="form-group">
+        <label>Goal Category</label>
+        <select id="catSelect" onchange="onCatChange()">
+          <option value="">— Select a category —</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Goal</label>
+        <select id="goalSelect" onchange="onGoalChange()" disabled>
+          <option value="">— Select a goal —</option>
+        </select>
+        <div class="goal-preview-box" id="goalPreview"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Status</label>
+        <div class="status-grid">
+          <div class="status-opt s-not-started">
+            <input type="radio" name="status" id="s-ns" value="not_started">
+            <label for="s-ns">Not Started</label>
+          </div>
+          <div class="status-opt s-in-progress">
+            <input type="radio" name="status" id="s-ip" value="in_progress">
+            <label for="s-ip">In Progress</label>
+          </div>
+          <div class="status-opt s-on-track">
+            <input type="radio" name="status" id="s-ot" value="on_track">
+            <label for="s-ot">On Track</label>
+          </div>
+          <div class="status-opt s-completed">
+            <input type="radio" name="status" id="s-co" value="completed">
+            <label for="s-co">Completed</label>
+          </div>
+          <div class="status-opt s-at-risk">
+            <input type="radio" name="status" id="s-ar" value="at_risk">
+            <label for="s-ar">At Risk</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Update / Comment <span style="font-weight:400;text-transform:none">(optional)</span></label>
+        <textarea id="commentInput" placeholder="Describe progress, key accomplishments, blockers, or next steps…"></textarea>
+      </div>
+
+      <button class="btn-submit" id="submitBtn" onclick="submitUpdate()">Save Update</button>
+      <div class="submit-msg" id="submitMsg"></div>
+    </div>
+
+    <!-- Recent updates sidebar -->
+    <div class="recent-card">
+      <h3>Recent Updates</h3>
+      <div id="recentList">
+        <div class="no-recent">No updates yet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  HSRO FY27 Goals Dashboard &nbsp;·&nbsp; University of Utah Health Research Office
+  &nbsp;·&nbsp; <a href="index.html">Back to Dashboard</a>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+//  CONFIGURATION  ← replace with your Supabase project credentials
+// ════════════════════════════════════════════════════════════════════
+const SUPABASE_URL      = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+// ── Password configuration ───────────────────────────────────────────
+//  This is the SHA-256 hash of the shared team password.
+//  Default password: HSRO2027!
+//
+//  To change the password:
+//    1. Visit https://emn178.github.io/online-tools/sha256.html
+//    2. Type your new password in the "Input" box
+//    3. Copy the hash from "Output" and paste it below
+//    4. Share the new plain-text password with your team
+//
+const PASSWORD_HASH = 'abab999561d01dd4edc25ae253d8c7f5cd99261fcf41b05653c7f12af55c25fb';
+// ════════════════════════════════════════════════════════════════════
+
+// ── Goals Data (keep in sync with index.html) ─────────────────────────
+const GOALS_DATA = [
+  {
+    id: 'SA', label: 'Strategic Alignment', color: '#4F868E',
+    goals: [
+      { id: 'SA-1', team: 'HSC Cores',
+        text: 'Onboard at least one new recharge center onto HSC Cores software and administrative support.' },
+      { id: 'SA-2', team: 'Research Comm',
+        text: 'Work to bridge the clinical and research communities by delivering at least six Pulse stories, two The Update talks, and two research demonstration events for the clinical community.' }
+    ]
+  },
+  {
+    id: 'PC', label: 'People & Community', color: '#6CC24A',
+    goals: [
+      { id: 'PC-1', team: 'Operations/Finance',
+        text: 'Complete a data audit of available workforce metrics from UCareer in partnership with HR and the HSRO Finance Analytics Team, and deliver a research workforce dashboard prototype that tracks current workforce composition, movement within the workforce, and identified hard-to-fill research positions in an AI-assisted manner.' },
+      { id: 'PC-2', team: 'Communications',
+        text: 'Increase public trust with at least 5 community or school outreach events reaching 150 individuals, and launch of a public research newsletter with a goal of 250 subscribers.' }
+    ]
+  },
+  {
+    id: 'AQE', label: 'Access, Quality & Experience', color: '#3ABFC0',
+    goals: [
+      { id: 'AQE-1', team: 'Research Comm',
+        text: 'Elevate research as a distinguishing feature of U of U Health by publishing at least 12 public-facing research stories. Goal of two million impressions and 10,000 engagements.' },
+      { id: 'AQE-2', team: 'BREO',
+        text: 'Establish agreements with at least five institutional partners and/or local life science companies to streamline experiential education placements for graduate students in the health sciences.' },
+      { id: 'AQE-3', team: 'Research Space',
+        text: 'Advance the Research Park as a natural extension of the Health Sciences research campus by engaging Wintrobe Building investigators on relocation opportunities and delivering an updated investigator relocation plan for the Williams/Myriad space.' }
+    ]
+  },
+  {
+    id: 'IRE', label: 'Innovation, Research & Education', color: '#FFB81D',
+    goals: [
+      { id: 'IRE-1', team: 'Research Comm',
+        text: 'Advance cross-unit research collaboration by convening at least 8 cross-unit researcher community events and completing a formal planning year for 2–3 multi-divisional research initiatives.' },
+      { id: 'IRE-2', team: 'Operations/Finance',
+        text: 'Modernize HSRO analytical infrastructure by integrating AI-enabled reporting tools and formalizing partnerships with the VPR Office and university data stewards.' },
+      { id: 'IRE-3', team: 'BREO',
+        text: 'Partner with campus academic units to design and advance a biotechnology Master\'s program centered in the health sciences.' }
+    ]
+  },
+  {
+    id: 'GFS', label: 'Generative Financial Stewardship', color: '#E4937B',
+    goals: [
+      { id: 'GFS-1', team: 'RPD Team',
+        text: 'Deliver decision support materials to the UofU Health research community, including a research competitiveness landscape analysis, portfolio gap assessments, and/or federal funding trend brief.' },
+      { id: 'GFS-2', team: 'Operations/Finance',
+        text: 'Develop and socialize a health sciences strategic recruitment model oriented toward national distinction, with growth targets benchmarked against a 33% above CAGR threshold.' },
+      { id: 'GFS-3', team: 'Philanthropy',
+        text: 'Advance philanthropic engagement in support of health sciences research by designing and hosting at least two donor research salons in the community.' }
+    ]
+  }
+];
+
+const STATUS_LABELS = {
+  not_started: 'Not Started',
+  in_progress: 'In Progress',
+  on_track:    'On Track',
+  completed:   'Completed',
+  at_risk:     'At Risk'
+};
+
+// ── Supabase ──────────────────────────────────────────────────────────
+const isConfigured =
+  SUPABASE_URL      !== 'YOUR_SUPABASE_URL' &&
+  SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+
+const sb = isConfigured
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+// ── Auth ──────────────────────────────────────────────────────────────
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function authenticate() {
+  const btn = document.querySelector('.btn-primary');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+
+  const val  = document.getElementById('pwdInput').value;
+  const hash = await hashStr(val);
+  btn.disabled = false;
+  btn.textContent = 'Enter Portal';
+
+  if (hash === PASSWORD_HASH) {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('adminPortal').style.display = 'block';
+    initPortal();
+  } else {
+    const err = document.getElementById('authError');
+    err.textContent = 'Incorrect password. Please try again.';
+    document.getElementById('pwdInput').value = '';
+    document.getElementById('pwdInput').focus();
+    setTimeout(() => { err.textContent = ''; }, 4000);
+  }
+}
+
+// ── Portal init ───────────────────────────────────────────────────────
+function initPortal() {
+  if (!isConfigured) {
+    document.getElementById('configNotice').style.display = 'block';
+  }
+
+  // Populate category dropdown
+  const catSel = document.getElementById('catSelect');
+  GOALS_DATA.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat.id;
+    opt.textContent = cat.label;
+    catSel.appendChild(opt);
+  });
+
+  loadRecentUpdates();
+}
+
+// ── Dropdown handlers ─────────────────────────────────────────────────
+function onCatChange() {
+  const catId   = document.getElementById('catSelect').value;
+  const goalSel = document.getElementById('goalSelect');
+  const preview = document.getElementById('goalPreview');
+
+  goalSel.innerHTML = '<option value="">— Select a goal —</option>';
+  goalSel.disabled  = !catId;
+  preview.style.display = 'none';
+
+  if (!catId) return;
+  const cat = GOALS_DATA.find(c => c.id === catId);
+  if (!cat) return;
+  cat.goals.forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g.id;
+    opt.textContent = `${g.id} · ${g.team}`;
+    goalSel.appendChild(opt);
+  });
+}
+
+function onGoalChange() {
+  const goalId  = document.getElementById('goalSelect').value;
+  const preview = document.getElementById('goalPreview');
+
+  if (!goalId) { preview.style.display = 'none'; return; }
+
+  let foundGoal = null;
+  GOALS_DATA.forEach(cat => {
+    const g = cat.goals.find(g => g.id === goalId);
+    if (g) foundGoal = g;
+  });
+
+  if (foundGoal) {
+    preview.textContent   = foundGoal.text;
+    preview.style.display = 'block';
+  }
+}
+
+// ── Submit update ─────────────────────────────────────────────────────
+async function submitUpdate() {
+  const author  = document.getElementById('authorInput').value.trim();
+  const goalId  = document.getElementById('goalSelect').value;
+  const statusEl = document.querySelector('input[name="status"]:checked');
+  const comment = document.getElementById('commentInput').value.trim();
+  const msgEl   = document.getElementById('submitMsg');
+  const btn     = document.getElementById('submitBtn');
+
+  // Validation
+  if (!author)   { showMsg('Please enter your name.', 'error'); return; }
+  if (!goalId)   { showMsg('Please select a goal.', 'error'); return; }
+  if (!statusEl) { showMsg('Please select a status.', 'error'); return; }
+
+  const status = statusEl.value;
+
+  // Find goal info for display
+  let goalLabel = goalId, catLabel = '';
+  GOALS_DATA.forEach(cat => {
+    const g = cat.goals.find(g => g.id === goalId);
+    if (g) { goalLabel = `${g.id} · ${g.team}`; catLabel = cat.label; }
+  });
+
+  if (!isConfigured) {
+    showMsg('Database not configured — update cannot be saved. See SETUP.md.', 'error');
+    return;
+  }
+
+  btn.disabled     = true;
+  btn.textContent  = 'Saving…';
+  msgEl.textContent = '';
+
+  try {
+    const { error } = await sb.from('goal_updates').insert({
+      goal_id:   goalId,
+      goal_label: goalLabel,
+      category:  catLabel,
+      status,
+      comment:   comment || null,
+      author
+    });
+    if (error) throw error;
+
+    showMsg('✓ Update saved successfully!', 'success');
+    // Reset form
+    document.getElementById('commentInput').value = '';
+    document.querySelector('input[name="status"]:checked').checked = false;
+    loadRecentUpdates();
+  } catch(e) {
+    console.error(e);
+    showMsg('Error saving update: ' + (e.message || 'Unknown error'), 'error');
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'Save Update';
+  }
+}
+
+function showMsg(text, type) {
+  const el = document.getElementById('submitMsg');
+  el.textContent  = text;
+  el.className    = 'submit-msg ' + type;
+  if (type === 'success') setTimeout(() => { el.textContent = ''; }, 5000);
+}
+
+// ── Recent updates sidebar ────────────────────────────────────────────
+async function loadRecentUpdates() {
+  const list = document.getElementById('recentList');
+  if (!sb) {
+    list.innerHTML = '<div class="no-recent">Connect Supabase to see updates</div>';
+    return;
+  }
+
+  try {
+    const { data, error } = await sb
+      .from('goal_updates')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(15);
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div class="no-recent">No updates logged yet</div>';
+      return;
+    }
+
+    list.innerHTML = data.map(u => {
+      const d = new Date(u.created_at);
+      const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                    + ' · ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      return `
+        <div class="recent-item">
+          <div class="ri-meta">
+            <span class="ri-goal-id">${esc(u.goal_id)}</span>
+            <span class="ri-author">${esc(u.author)}</span>
+            <span class="ri-status-badge ${u.status}">${STATUS_LABELS[u.status] || u.status}</span>
+            <span class="ri-date">${dateStr}</span>
+          </div>
+          ${u.comment ? `<div class="ri-comment">"${esc(u.comment)}"</div>` : ''}
+        </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="no-recent">Could not load recent updates</div>';
+  }
+}
+
+function esc(t) {
+  if (!t) return '';
+  return String(t)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

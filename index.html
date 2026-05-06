@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSRO FY27 Goals Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+/* ═══════════════════════════════════════════════
+   U of U Health Brand Colors
+   Utah Red:        #BE0000
+   90% Gray:        #1A1A1A
+   Granite Peak:    #708E99
+   Salt Flat Gray:  #E2E6E6
+   Lake Powell:     #4F868E
+   Great Salt Lake: #3ABFC0
+   Blue Topaz:      #9DD8D7
+   Mountain Green:  #6CC24A
+   Wasatch Sunrise: #FFB81D
+   Aspen Yellow:    #EFC041
+   Coral:           #E4937B
+   Red Rocks:       #890000
+═══════════════════════════════════════════════ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Century Gothic', 'AppleGothic', 'Trebuchet MS', Arial, sans-serif;
+  background: #F0F2F3;
+  color: #1A1A1A;
+  min-height: 100vh;
+}
+
+/* ── Header ─────────────────────────────────── */
+.site-header {
+  background: #BE0000;
+  color: #fff;
+  padding: 20px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+.header-left h1 {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.header-left .subtitle {
+  font-size: 0.82rem;
+  opacity: 0.85;
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+}
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.btn-admin {
+  background: #fff;
+  color: #BE0000;
+  padding: 8px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: background 0.15s;
+}
+.btn-admin:hover { background: #E2E6E6; }
+.sync-info {
+  font-size: 0.73rem;
+  opacity: 0.85;
+  letter-spacing: 0.03em;
+}
+#syncDot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #6CC24A;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+#syncDot.loading { background: #FFB81D; animation: pulse 1s infinite; }
+#syncDot.error   { background: #E4937B; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Summary Bar ────────────────────────────── */
+.summary-bar {
+  display: flex;
+  gap: 12px;
+  padding: 20px 36px;
+  flex-wrap: wrap;
+  background: #fff;
+  border-bottom: 1px solid #E2E6E6;
+}
+.stat-card {
+  flex: 1;
+  min-width: 110px;
+  text-align: center;
+  padding: 14px 12px 12px;
+  border-radius: 6px;
+  background: #F0F2F3;
+}
+.stat-card .num  { font-size: 1.9rem; font-weight: 700; line-height: 1; }
+.stat-card .lbl  { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: #708E99; margin-top: 5px; }
+
+.stat-card.s-total       .num { color: #1A1A1A; }
+.stat-card.s-not-started .num { color: #939598; }
+.stat-card.s-in-progress .num { color: #4F868E; }
+.stat-card.s-on-track    .num { color: #6CC24A; }
+.stat-card.s-completed   .num { color: #3ABFC0; }
+.stat-card.s-at-risk     .num { color: #BE0000; }
+
+/* ── Notice Banner ──────────────────────────── */
+.notice-banner {
+  background: #FFF8E7;
+  border-left: 4px solid #FFB81D;
+  padding: 14px 20px;
+  margin: 20px 36px 0;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  display: none;
+}
+.notice-banner code {
+  background: #E2E6E6;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+/* ── Main Content ───────────────────────────── */
+.main-content { padding: 20px 36px 48px; }
+
+/* ── Category Section ───────────────────────── */
+.category-section { margin-bottom: 36px; }
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid;
+}
+.cat-icon  { font-size: 1.3rem; }
+.cat-title { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.cat-count {
+  font-size: 0.72rem;
+  background: #E2E6E6;
+  color: #708E99;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+/* ── Goal Cards ─────────────────────────────── */
+.goals-grid { display: grid; gap: 14px; }
+
+.goal-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 18px 22px;
+  border-left: 5px solid;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.1s;
+}
+.goal-card:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  transform: translateY(-1px);
+}
+
+.goal-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.goal-id {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #939598;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.team-badge {
+  font-size: 0.7rem;
+  background: #E2E6E6;
+  color: #708E99;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.status-badge {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+.status-badge.not_started { background: #ECEFF1; color: #708E99; }
+.status-badge.in_progress { background: #E8F4F5; color: #4F868E; }
+.status-badge.on_track    { background: #EDF7E6; color: #4A8A33; }
+.status-badge.completed   { background: #E4F8F8; color: #2A9191; }
+.status-badge.at_risk     { background: #FDECEA; color: #BE0000; }
+
+.goal-text {
+  font-size: 0.875rem;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.goal-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.last-update-txt {
+  font-size: 0.78rem;
+  color: #939598;
+  font-style: italic;
+  flex: 1;
+  line-height: 1.5;
+}
+.last-update-txt .au { color: #4F868E; font-weight: 600; font-style: normal; }
+.expand-btn {
+  font-size: 0.72rem;
+  color: #9DD8D7;
+  flex-shrink: 0;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+/* ── Update History ─────────────────────────── */
+.update-history {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #E2E6E6;
+  display: none;
+}
+.update-history.open { display: block; }
+.history-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #939598;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+.update-item {
+  background: #F8FAFA;
+  border-radius: 5px;
+  padding: 10px 13px;
+  margin-bottom: 8px;
+  border-left: 3px solid #E2E6E6;
+}
+.update-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+.ui-author  { font-size: 0.78rem; font-weight: 700; color: #1A1A1A; }
+.ui-date    { font-size: 0.7rem; color: #939598; }
+.ui-comment { font-size: 0.82rem; color: #555; line-height: 1.5; }
+.no-updates-msg { font-size: 0.8rem; color: #B0BAC0; font-style: italic; text-align: center; padding: 12px 0; }
+
+/* ── Loading ────────────────────────────────── */
+.loading-msg {
+  text-align: center;
+  padding: 60px 20px;
+  color: #939598;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+.loading-spinner {
+  width: 30px; height: 30px;
+  border: 3px solid #E2E6E6;
+  border-top-color: #BE0000;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 14px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Footer ─────────────────────────────────── */
+.site-footer {
+  text-align: center;
+  padding: 22px 20px;
+  color: #939598;
+  font-size: 0.75rem;
+  border-top: 1px solid #E2E6E6;
+  background: #fff;
+  letter-spacing: 0.03em;
+}
+.site-footer a { color: #4F868E; text-decoration: none; }
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 640px) {
+  .site-header { padding: 16px 18px; }
+  .header-left h1 { font-size: 1.15rem; }
+  .summary-bar, .main-content { padding-left: 18px; padding-right: 18px; }
+  .notice-banner { margin: 16px 18px 0; }
+  .stat-card { min-width: 90px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="header-left">
+    <h1>HSRO FY27 Goals Dashboard</h1>
+    <div class="subtitle">Health Research Office &nbsp;·&nbsp; Fiscal Year 2027</div>
+  </div>
+  <div class="header-right">
+    <a href="admin.html" class="btn-admin">✏ Update Portal</a>
+    <div class="sync-info">
+      <span id="syncDot" class="loading"></span>
+      <span id="syncText">Connecting...</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══ SUMMARY BAR ════════════════════════════════════════════════ -->
+<div class="summary-bar">
+  <div class="stat-card s-total">
+    <div class="num">13</div><div class="lbl">Total Goals</div>
+  </div>
+  <div class="stat-card s-not-started">
+    <div class="num" id="sNotStarted">—</div><div class="lbl">Not Started</div>
+  </div>
+  <div class="stat-card s-in-progress">
+    <div class="num" id="sInProgress">—</div><div class="lbl">In Progress</div>
+  </div>
+  <div class="stat-card s-on-track">
+    <div class="num" id="sOnTrack">—</div><div class="lbl">On Track</div>
+  </div>
+  <div class="stat-card s-completed">
+    <div class="num" id="sCompleted">—</div><div class="lbl">Completed</div>
+  </div>
+  <div class="stat-card s-at-risk">
+    <div class="num" id="sAtRisk">—</div><div class="lbl">At Risk</div>
+  </div>
+</div>
+
+<!-- ══ SETUP NOTICE ═══════════════════════════════════════════════ -->
+<div class="notice-banner" id="noticeBanner">
+  <strong>⚙️ Setup required:</strong> This dashboard is not yet connected to a live database.
+  Follow the instructions in <code>SETUP.md</code> to configure Supabase, then update the
+  <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> values at the top of this file.
+  Goals are shown below with placeholder statuses.
+</div>
+
+<!-- ══ MAIN CONTENT ═══════════════════════════════════════════════ -->
+<main class="main-content" id="mainContent">
+  <div class="loading-msg">
+    <div class="loading-spinner"></div>
+    Loading goals…
+  </div>
+</main>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  HSRO FY27 Goals Dashboard &nbsp;·&nbsp; University of Utah Health Research Office
+  &nbsp;·&nbsp; <a href="admin.html">Update Portal</a>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+//  CONFIGURATION  ← replace with your Supabase project credentials
+// ════════════════════════════════════════════════════════════════════
+const SUPABASE_URL      = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+// ════════════════════════════════════════════════════════════════════
+
+// ── Goals Data ───────────────────────────────────────────────────────
+const GOALS_DATA = [
+  {
+    id: 'SA', label: 'Strategic Alignment', icon: '🎯', color: '#4F868E',
+    goals: [
+      { id: 'SA-1', team: 'HSC Cores',
+        text: 'Onboard at least one new recharge center onto HSC Cores software and administrative support.' },
+      { id: 'SA-2', team: 'Research Comm',
+        text: 'Work to bridge the clinical and research communities by delivering at least six Pulse stories, two The Update talks, and two research demonstration events for the clinical community.' }
+    ]
+  },
+  {
+    id: 'PC', label: 'People & Community', icon: '👥', color: '#6CC24A',
+    goals: [
+      { id: 'PC-1', team: 'Operations/Finance',
+        text: 'Complete a data audit of available workforce metrics from UCareer in partnership with HR and the HSRO Finance Analytics Team, and deliver a research workforce dashboard prototype that tracks current workforce composition, movement within the workforce, and identified hard-to-fill research positions in an AI-assisted manner.' },
+      { id: 'PC-2', team: 'Communications',
+        text: 'Increase public trust with at least 5 community or school outreach events reaching 150 individuals, and launch of a public research newsletter with a goal of 250 subscribers. Engagement tracked by newsletter open rates and story clicks. Sentiment tracked by surveys submitted to teachers at school events and sent to newsletter subscribers.' }
+    ]
+  },
+  {
+    id: 'AQE', label: 'Access, Quality & Experience', icon: '⭐', color: '#3ABFC0',
+    goals: [
+      { id: 'AQE-1', team: 'Research Comm',
+        text: 'Elevate research as a distinguishing feature of U of U Health by publishing at least 12 public-facing research stories via Research Impact stories, Pioneering the Future, and social media. Goal of two million impressions and 10,000 engagements.' },
+      { id: 'AQE-2', team: 'BREO',
+        text: 'Establish agreements with at least five institutional partners and/or local life science companies to streamline experiential education placements for graduate students in the health sciences, with success measured by signed agreements and placements.' },
+      { id: 'AQE-3', team: 'Research Space',
+        text: 'Advance the Research Park as a natural extension of the Health Sciences research campus by engaging Wintrobe Building investigators on relocation opportunities, building enthusiasm for the Research Park\'s culture of innovation, and delivering an updated investigator relocation plan for the Williams/Myriad space.' }
+    ]
+  },
+  {
+    id: 'IRE', label: 'Innovation, Research & Education', icon: '💡', color: '#FFB81D',
+    goals: [
+      { id: 'IRE-1', team: 'Research Comm',
+        text: 'Advance cross-unit research collaboration by (1) convening at least 8 cross-unit researcher community events tied to potential or identified research strategic areas and (2) completing a formal planning year for 2–3 multi-divisional research initiatives that each include multiple colleges and departments. Post-event surveys will measure event satisfaction, sense of connection, and intent to collaborate.' },
+      { id: 'IRE-2', team: 'Operations/Finance',
+        text: 'Modernize HSRO analytical infrastructure by integrating AI-enabled reporting tools and formalizing partnerships with the VPR Office and university data stewards to deliver centralized reporting products/dashboards that serve both health sciences and main campus research leadership.' },
+      { id: 'IRE-3', team: 'BREO',
+        text: 'Partner with campus academic units to design and advance a biotechnology Master\'s program centered in the health sciences; deliverables include a defined curriculum framework, an identified program home, and a proposal submitted for review.' }
+    ]
+  },
+  {
+    id: 'GFS', label: 'Generative Financial Stewardship', icon: '📈', color: '#E4937B',
+    goals: [
+      { id: 'GFS-1', team: 'RPD Team',
+        text: 'Deliver decision support materials to the UofU Health research community, such as a research competitiveness landscape analysis, portfolio gap assessments, and/or federal funding trend brief, with each tied to a documented leadership decision or investment discussion.' },
+      { id: 'GFS-2', team: 'Operations/Finance',
+        text: 'Develop and socialize a health sciences strategic recruitment model oriented toward national distinction by vetting assumptions, refining projections, and presenting a finalized model with resulting objectives to research leadership for endorsement, with growth targets benchmarked against a 33% above CAGR threshold.' },
+      { id: 'GFS-3', team: 'Philanthropy',
+        text: 'Advance philanthropic engagement in support of health sciences research by designing and hosting at least two donor research salons in the community, each featuring faculty-led research presentations and documented follow-up with attendees to identify giving interests and next steps.' }
+    ]
+  }
+];
+
+const STATUS_LABELS = {
+  not_started: 'Not Started',
+  in_progress: 'In Progress',
+  on_track:    'On Track',
+  completed:   'Completed',
+  at_risk:     'At Risk'
+};
+
+// ── Runtime state ────────────────────────────────────────────────────
+const updates = {}; // goalId → array of update objects (newest first)
+const openCards = new Set();
+
+const isConfigured =
+  SUPABASE_URL      !== 'YOUR_SUPABASE_URL' &&
+  SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+
+const sb = isConfigured
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+// ── Utilities ────────────────────────────────────────────────────────
+function esc(t) {
+  if (!t) return '';
+  return String(t)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+       + ' · '
+       + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+function goalStatus(goalId) {
+  const arr = updates[goalId];
+  return arr && arr.length ? arr[0].status : 'not_started';
+}
+
+// ── Fetch ────────────────────────────────────────────────────────────
+async function fetchUpdates() {
+  if (!sb) return false;
+  try {
+    const { data, error } = await sb
+      .from('goal_updates')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    // Clear and repopulate
+    Object.keys(updates).forEach(k => delete updates[k]);
+    (data || []).forEach(u => {
+      if (!updates[u.goal_id]) updates[u.goal_id] = [];
+      updates[u.goal_id].push(u);
+    });
+    return true;
+  } catch(e) {
+    console.error('Supabase fetch error:', e);
+    return false;
+  }
+}
+
+// ── Stat counts ──────────────────────────────────────────────────────
+function countStatuses() {
+  const c = { not_started: 0, in_progress: 0, on_track: 0, completed: 0, at_risk: 0 };
+  GOALS_DATA.forEach(cat => cat.goals.forEach(g => {
+    const s = goalStatus(g.id);
+    c[s] = (c[s] || 0) + 1;
+  }));
+  return c;
+}
+
+// ── Render helpers ───────────────────────────────────────────────────
+function badgeHtml(status) {
+  return `<span class="status-badge ${status}">${STATUS_LABELS[status] || 'Not Started'}</span>`;
+}
+
+function renderGoalCard(goal, catColor) {
+  const status   = goalStatus(goal.id);
+  const arr      = updates[goal.id] || [];
+  const latest   = arr[0];
+  const isOpen   = openCards.has(goal.id);
+  const histCount = arr.length;
+
+  let lastUpdateHtml = '<em>No updates yet</em>';
+  if (latest) {
+    const comment = latest.comment ? `"${esc(latest.comment)}" · ` : '';
+    lastUpdateHtml = `<span class="au">${esc(latest.author)}</span>: ${comment}${fmtDate(latest.created_at)}`;
+  }
+
+  let historyItems = '<div class="no-updates-msg">No updates logged yet</div>';
+  if (arr.length) {
+    historyItems = arr.map(u => `
+      <div class="update-item">
+        <div class="update-item-meta">
+          <span class="ui-author">${esc(u.author)}</span>
+          <span class="ui-date">${fmtDate(u.created_at)}</span>
+          ${badgeHtml(u.status)}
+        </div>
+        ${u.comment ? `<div class="ui-comment">${esc(u.comment)}</div>` : ''}
+      </div>`).join('');
+  }
+
+  return `
+    <div class="goal-card" style="border-left-color:${catColor}"
+         onclick="toggleCard('${goal.id}')">
+      <div class="goal-card-top">
+        <span class="goal-id">${goal.id}</span>
+        <span class="team-badge">${esc(goal.team)}</span>
+        ${badgeHtml(status)}
+      </div>
+      <p class="goal-text">${esc(goal.text)}</p>
+      <div class="goal-footer">
+        <div class="last-update-txt">${lastUpdateHtml}</div>
+        <div class="expand-btn" id="ebtn-${goal.id}">
+          ${isOpen ? '▲ Hide' : `▼ History (${histCount})`}
+        </div>
+      </div>
+      <div class="update-history ${isOpen ? 'open' : ''}" id="hist-${goal.id}">
+        <div class="history-label">Update History</div>
+        ${historyItems}
+      </div>
+    </div>`;
+}
+
+function toggleCard(goalId) {
+  if (openCards.has(goalId)) {
+    openCards.delete(goalId);
+  } else {
+    openCards.add(goalId);
+  }
+  const panel = document.getElementById(`hist-${goalId}`);
+  const btn   = document.getElementById(`ebtn-${goalId}`);
+  if (!panel || !btn) return;
+  const isOpen = openCards.has(goalId);
+  panel.classList.toggle('open', isOpen);
+  btn.textContent = isOpen ? '▲ Hide' : `▼ History (${(updates[goalId]||[]).length})`;
+}
+
+// ── Render full dashboard ────────────────────────────────────────────
+function renderDashboard() {
+  // Stats
+  const c = countStatuses();
+  document.getElementById('sNotStarted').textContent = c.not_started;
+  document.getElementById('sInProgress').textContent = c.in_progress;
+  document.getElementById('sOnTrack').textContent    = c.on_track;
+  document.getElementById('sCompleted').textContent  = c.completed;
+  document.getElementById('sAtRisk').textContent     = c.at_risk;
+
+  // Cards
+  let html = '';
+  GOALS_DATA.forEach(cat => {
+    html += `
+      <section class="category-section">
+        <div class="category-header" style="border-color:${cat.color};color:${cat.color}">
+          <span class="cat-icon">${cat.icon}</span>
+          <span class="cat-title">${cat.label}</span>
+          <span class="cat-count">${cat.goals.length} goal${cat.goals.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="goals-grid">
+          ${cat.goals.map(g => renderGoalCard(g, cat.color)).join('')}
+        </div>
+      </section>`;
+  });
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+// ── Sync ─────────────────────────────────────────────────────────────
+async function sync() {
+  const dot  = document.getElementById('syncDot');
+  const text = document.getElementById('syncText');
+  dot.className = 'loading';
+  text.textContent = 'Syncing…';
+
+  if (!isConfigured) {
+    document.getElementById('noticeBanner').style.display = 'block';
+    renderDashboard();
+    dot.className = 'error';
+    text.textContent = 'Not connected · See SETUP.md';
+    return;
+  }
+
+  const ok = await fetchUpdates();
+  renderDashboard();
+
+  if (ok) {
+    dot.className = '';
+    const t = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    text.textContent = `Synced ${t}`;
+  } else {
+    dot.className = 'error';
+    text.textContent = 'Sync error — retrying…';
+  }
+}
+
+// Initial load + auto-refresh every 60 s
+sync();
+setInterval(sync, 60000);
+</script>
+</body>
+</html>
