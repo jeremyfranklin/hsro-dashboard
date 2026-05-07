@@ -110,21 +110,32 @@ body {
 .sidebar-brand h1 { font-size: 0.88rem; font-weight: 700; letter-spacing: 0.03em; line-height: 1.35; }
 .sidebar-brand .sub { font-size: 0.72rem; color: var(--gray2); margin-top: 3px; }
 
-/* Overall progress ring */
+/* Overall progress stacked bar */
 .sidebar-overview {
-  padding: 20px 20px 16px; border-bottom: 1px solid var(--gray1);
+  padding: 16px 20px 14px; border-bottom: 1px solid var(--gray1);
 }
 .overview-title {
   font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em;
-  color: var(--gray2); font-weight: 700; margin-bottom: 14px;
+  color: var(--gray2); font-weight: 700; margin-bottom: 10px;
 }
-.ring-wrap {
-  display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+.stack-bar {
+  display: flex; height: 10px; border-radius: 99px;
+  overflow: hidden; gap: 2px; margin-bottom: 10px; background: var(--gray1);
 }
-.ring-svg { flex-shrink: 0; }
-.ring-stats { flex: 1; }
-.ring-pct { font-size: 1.6rem; font-weight: 700; color: var(--dark); line-height: 1; }
-.ring-pct-sub { font-size: 0.72rem; color: var(--gray2); margin-top: 3px; }
+.stack-seg {
+  height: 100%; transition: width 0.6s ease; min-width: 0;
+}
+.stack-seg.not_started { background: #90A4AE; }
+.stack-seg.in_progress { background: var(--teal); }
+.stack-seg.on_track    { background: var(--green); }
+.stack-seg.completed   { background: var(--teal2); }
+.stack-seg.at_risk     { background: var(--red); }
+.stack-summary {
+  display: flex; align-items: baseline; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;
+}
+.stack-pct { font-size: 1.5rem; font-weight: 700; color: var(--teal2); line-height: 1; }
+.stack-pct-label { font-size: 0.7rem; color: var(--gray2); }
+.stack-secondary { font-size: 0.68rem; color: var(--green); font-weight: 700; margin-left: auto; }
 
 /* Status mini pills */
 .status-pills { display: flex; flex-direction: column; gap: 5px; }
@@ -282,15 +293,23 @@ body {
   padding: 2px 8px; border-radius: 20px; font-weight: 600;
 }
 .status-badge {
-  font-size: 0.6rem; padding: 2px 8px; border-radius: 20px;
+  font-size: 0.66rem; padding: 4px 10px; border-radius: 20px;
   font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
-  margin-left: auto;
+  margin-left: auto; white-space: nowrap;
 }
-.status-badge.not_started { background: #ECEFF1; color: #546E7A; }
-.status-badge.in_progress { background: #E1EEF0; color: #3A6870; }
-.status-badge.on_track    { background: #EAF5E2; color: #3E7A22; }
-.status-badge.completed   { background: #DFF6F6; color: #1E8A8A; }
-.status-badge.at_risk     { background: #FDECEA; color: #BE0000; }
+.status-badge.not_started { background: #CFD8DC; color: #263238; }
+.status-badge.in_progress { background: #9DD8D7; color: #0D4A52; }
+.status-badge.on_track    { background: #BAEAA2; color: #1E5C08; }
+.status-badge.completed   { background: #80DEEA; color: #004D5C; }
+.status-badge.at_risk     { background: #FFCDD2; color: #8B0000; }
+
+/* Status strip across top of card */
+.status-strip { height: 3px; flex-shrink: 0; }
+.status-strip.not_started { background: #90A4AE; }
+.status-strip.in_progress { background: var(--teal); }
+.status-strip.on_track    { background: var(--green); }
+.status-strip.completed   { background: var(--teal2); }
+.status-strip.at_risk     { background: var(--red); }
 
 /* Clamped text — expands when card is open */
 .goal-text {
@@ -357,85 +376,6 @@ body {
 }
 .ui-comment { font-size: 0.8rem; color: #555; line-height: 1.5; margin-top: 4px; }
 .no-updates { font-size: 0.78rem; color: #B0BAC0; font-style: italic; text-align: center; padding: 12px 0; }
-.ui-edit-btn {
-  margin-left: auto; font-size: 0.62rem; padding: 2px 8px; border-radius: 4px;
-  background: #fff; border: 1px solid var(--gray1); color: var(--gray2);
-  cursor: pointer; font-family: inherit; font-weight: 600;
-  transition: all 0.12s; flex-shrink: 0;
-}
-.ui-edit-btn:hover { background: var(--gray1); color: var(--dark); }
-
-/* ── Edit Modal ──────────────────────────── */
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.35);
-  display: flex; align-items: center; justify-content: center; padding: 24px;
-}
-.modal-overlay.hidden { display: none; }
-.modal-card {
-  background: #fff; border-radius: 12px; padding: 28px 30px;
-  width: 100%; max-width: 480px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-}
-.modal-title {
-  font-size: 0.95rem; font-weight: 700; letter-spacing: 0.03em;
-  text-transform: uppercase; color: var(--red);
-  margin-bottom: 4px;
-}
-.modal-subtitle { font-size: 0.76rem; color: var(--gray2); margin-bottom: 20px; }
-.modal-field { margin-bottom: 14px; }
-.modal-field label {
-  display: block; font-size: 0.66rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.08em;
-  color: var(--gray2); margin-bottom: 5px;
-}
-.modal-field input[type="text"],
-.modal-field input[type="number"],
-.modal-field textarea {
-  width: 100%; padding: 9px 12px; border: 1.5px solid var(--gray1);
-  border-radius: 6px; font-family: inherit; font-size: 0.85rem;
-  color: var(--dark); transition: border-color 0.2s;
-}
-.modal-field input:focus, .modal-field textarea:focus {
-  outline: none; border-color: var(--teal);
-}
-.modal-field textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
-.modal-status-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px;
-}
-.mso { position: relative; }
-.mso input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
-.mso label {
-  display: flex; align-items: center; justify-content: center;
-  padding: 7px 6px; border-radius: 6px; border: 1.5px solid var(--gray1);
-  cursor: pointer; font-size: 0.7rem; font-weight: 700;
-  letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.12s;
-  user-select: none;
-}
-.mso.s-not-started input:checked + label { background: #ECEFF1; border-color: var(--gray3); color: #546E7A; }
-.mso.s-in-progress input:checked + label { background: #E1EEF0; border-color: var(--teal); color: #3A6870; }
-.mso.s-on-track    input:checked + label { background: #EAF5E2; border-color: var(--green); color: #3E7A22; }
-.mso.s-completed   input:checked + label { background: #DFF6F6; border-color: var(--teal2); color: #1E8A8A; }
-.mso.s-at-risk     input:checked + label { background: #FDECEA; border-color: var(--red); color: var(--red); }
-.mso label:hover { background: var(--gray0); border-color: var(--gray2); }
-.modal-actions { display: flex; gap: 8px; margin-top: 20px; }
-.modal-save {
-  flex: 1; padding: 11px; background: var(--red); color: #fff;
-  border: none; border-radius: 7px; font-family: inherit; font-size: 0.85rem;
-  font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
-  cursor: pointer; transition: background 0.15s;
-}
-.modal-save:hover    { background: var(--red2); }
-.modal-save:disabled { background: var(--gray3); cursor: not-allowed; }
-.modal-cancel {
-  padding: 11px 20px; background: #fff; color: var(--gray2);
-  border: 1.5px solid var(--gray1); border-radius: 7px; font-family: inherit;
-  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
-}
-.modal-cancel:hover { border-color: var(--gray2); color: var(--dark); }
-.modal-msg { font-size: 0.78rem; text-align: center; margin-top: 10px; min-height: 18px; font-weight: 600; }
-.modal-msg.success { color: #3E7A22; }
-.modal-msg.error   { color: var(--red); }
 
 /* Loading */
 .loading-block {
@@ -502,20 +442,18 @@ body {
     </div>
 
     <div class="sidebar-overview">
-      <div class="overview-title">Overall Progress</div>
-      <div class="ring-wrap">
-        <svg class="ring-svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Overall goal completion ring">
-          <circle cx="32" cy="32" r="26" fill="none" stroke="#E2E6E6" stroke-width="7"/>
-          <circle id="ringArc" cx="32" cy="32" r="26" fill="none"
-                  stroke="#3ABFC0" stroke-width="7"
-                  stroke-dasharray="163.36" stroke-dashoffset="163.36"
-                  stroke-linecap="round" transform="rotate(-90 32 32)"
-                  style="transition: stroke-dashoffset 0.8s ease"/>
-        </svg>
-        <div class="ring-stats">
-          <div class="ring-pct" id="ringPct">0%</div>
-          <div class="ring-pct-sub" id="ringPctSub">goals not started</div>
-        </div>
+      <div class="overview-title">Goal Status Breakdown</div>
+      <div class="stack-summary">
+        <span class="stack-pct" id="stackPct">0%</span>
+        <span class="stack-pct-label">completed</span>
+        <span class="stack-secondary" id="stackSecondary"></span>
+      </div>
+      <div class="stack-bar" id="stackBar">
+        <div class="stack-seg not_started" id="seg-not-started" style="width:100%"></div>
+        <div class="stack-seg in_progress" id="seg-in-progress" style="width:0%"></div>
+        <div class="stack-seg on_track"    id="seg-on-track"    style="width:0%"></div>
+        <div class="stack-seg completed"   id="seg-completed"   style="width:0%"></div>
+        <div class="stack-seg at_risk"     id="seg-at-risk"     style="width:0%"></div>
       </div>
 
       <!-- Status filter pills -->
@@ -608,45 +546,6 @@ body {
 
 </div><!-- /.app -->
 
-<!-- ══ EDIT MODAL ══════════════════════════════════ -->
-<div class="modal-overlay hidden" id="editModal" onclick="closeModalOnBg(event)">
-  <div class="modal-card">
-    <div class="modal-title">Edit Update</div>
-    <div class="modal-subtitle" id="modalSubtitle"></div>
-
-    <div class="modal-field">
-      <label>Your Name</label>
-      <input type="text" id="mAuthor" placeholder="First and Last Name" />
-    </div>
-
-    <div class="modal-field">
-      <label>Status</label>
-      <div class="modal-status-grid">
-        <div class="mso s-not-started"><input type="radio" name="mStatus" id="ms-ns" value="not_started"><label for="ms-ns">Not Started</label></div>
-        <div class="mso s-in-progress"><input type="radio" name="mStatus" id="ms-ip" value="in_progress"><label for="ms-ip">In Progress</label></div>
-        <div class="mso s-on-track">   <input type="radio" name="mStatus" id="ms-ot" value="on_track">   <label for="ms-ot">On Track</label></div>
-        <div class="mso s-completed">  <input type="radio" name="mStatus" id="ms-co" value="completed">  <label for="ms-co">Completed</label></div>
-        <div class="mso s-at-risk">    <input type="radio" name="mStatus" id="ms-ar" value="at_risk">    <label for="ms-ar">At Risk</label></div>
-      </div>
-    </div>
-
-    <div class="modal-field" id="mMetricField" style="display:none">
-      <label id="mMetricLabel">Metric Value</label>
-      <input type="number" id="mMetricVal" min="0" placeholder="0" />
-    </div>
-
-    <div class="modal-field">
-      <label>Comment <span style="font-weight:400;text-transform:none">(optional)</span></label>
-      <textarea id="mComment" placeholder="Describe progress, blockers, or next steps…"></textarea>
-    </div>
-
-    <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-save" id="mSaveBtn" onclick="saveEdit()">Save Changes</button>
-    </div>
-    <div class="modal-msg" id="mMsg"></div>
-  </div>
-</div>
 
 <script>
 /* ════════════════════════════════════════════════════
@@ -803,21 +702,24 @@ function countStatuses() {
 }
 
 function updateRing(c) {
-  const done = c.on_track + c.completed;
-  const pct  = c.total > 0 ? Math.round((done / c.total) * 100) : 0;
-  const circ = 2 * Math.PI * 26;
-  const offset = circ - (pct / 100) * circ;
-  const arc = document.getElementById('ringArc');
-  if (arc) { arc.style.strokeDashoffset = offset; }
-  const pctEl = document.getElementById('ringPct');
-  const subEl = document.getElementById('ringPctSub');
-  if (pctEl) pctEl.textContent = pct + '%';
-  if (subEl) {
-    if (pct === 100) subEl.textContent = 'all goals complete!';
-    else if (pct === 0 && c.in_progress > 0) subEl.textContent = `${c.in_progress} goal${c.in_progress!==1?'s':''} in progress`;
-    else if (pct === 0) subEl.textContent = 'no goals on track yet';
-    else subEl.textContent = `${done} of ${c.total} on track / done`;
-  }
+  const t = c.total || 1;
+  const segs = [
+    { id: 'seg-not-started', val: c.not_started },
+    { id: 'seg-in-progress', val: c.in_progress },
+    { id: 'seg-on-track',    val: c.on_track    },
+    { id: 'seg-completed',   val: c.completed   },
+    { id: 'seg-at-risk',     val: c.at_risk     }
+  ];
+  segs.forEach(s => {
+    const el = document.getElementById(s.id);
+    if (el) el.style.width = Math.round((s.val / t) * 100) + '%';
+  });
+  const completedPct = Math.round((c.completed / t) * 100);
+  const onTrackPct   = Math.round((c.on_track  / t) * 100);
+  const pctEl = document.getElementById('stackPct');
+  const secEl = document.getElementById('stackSecondary');
+  if (pctEl) pctEl.textContent = completedPct + '%';
+  if (secEl) secEl.textContent = onTrackPct > 0 ? `+ ${onTrackPct}% on track` : '';
 }
 
 function buildCatNav() {
@@ -892,12 +794,11 @@ function renderGoalCard(goal, catColor) {
     histItems = arr.map(u => {
       const mTag = (u.metric_value !== null && u.metric_value !== undefined)
         ? `<span class="ui-metric">${esc(goal.metric ? goal.metric.label : 'Metric')}: ${u.metric_value}</span>` : '';
-      const editBtn = sb ? `<button class="ui-edit-btn" onclick="event.stopPropagation(); openEditModal('${u.id}','${goal.id}')">✏ Edit</button>` : '';
       return `<div class="upd-item">
         <div class="upd-item-meta">
           <span class="ui-author">${esc(u.author)}</span>
           <span class="ui-date">${fmtDate(u.created_at)}</span>
-          ${badgeHtml(u.status)} ${mTag} ${editBtn}
+          ${badgeHtml(u.status)} ${mTag}
         </div>
         ${u.comment ? `<div class="ui-comment">${esc(u.comment)}</div>` : ''}
       </div>`;
@@ -906,6 +807,7 @@ function renderGoalCard(goal, catColor) {
 
   return `
     <div class="goal-card" style="border-left-color:${catColor}" onclick="toggleCard('${goal.id}')">
+      <div class="status-strip ${status}"></div>
       <div class="goal-card-body">
         <div class="goal-card-top">
           <span class="goal-id">${goal.id}</span>
@@ -1064,87 +966,6 @@ async function downloadReport() {
   } finally {
     btn.disabled = false; btn.textContent = 'Download Report';
   }
-}
-
-/* ════════════════════════════════════════════════════
-   EDIT MODAL
-════════════════════════════════════════════════════ */
-let editingId = null;
-let editingGoalId = null;
-
-async function openEditModal(updateId, goalId) {
-  if (!sb) return;
-  editingId = updateId;
-  editingGoalId = goalId;
-
-  const { data, error } = await sb.from('goal_updates').select('*').eq('id', updateId).single();
-  if (error || !data) { alert('Could not load that update.'); return; }
-
-  const goal = GOAL_MAP[goalId];
-  document.getElementById('modalSubtitle').textContent = `${goalId} · ${goal ? goal.team : ''}`;
-
-  document.getElementById('mAuthor').value = data.author || '';
-
-  const radio = document.querySelector(`input[name="mStatus"][value="${data.status}"]`);
-  if (radio) radio.checked = true;
-
-  if (goal && goal.metric) {
-    document.getElementById('mMetricLabel').textContent = goal.metric.label;
-    document.getElementById('mMetricVal').value = (data.metric_value !== null && data.metric_value !== undefined) ? data.metric_value : '';
-    document.getElementById('mMetricField').style.display = 'block';
-  } else {
-    document.getElementById('mMetricField').style.display = 'none';
-  }
-
-  document.getElementById('mComment').value = data.comment || '';
-  document.getElementById('mMsg').textContent = '';
-  document.getElementById('editModal').classList.remove('hidden');
-}
-
-function closeModal() {
-  document.getElementById('editModal').classList.add('hidden');
-  editingId = null; editingGoalId = null;
-}
-
-function closeModalOnBg(e) {
-  if (e.target === document.getElementById('editModal')) closeModal();
-}
-
-async function saveEdit() {
-  const author  = document.getElementById('mAuthor').value.trim();
-  const statusEl = document.querySelector('input[name="mStatus"]:checked');
-  const comment = document.getElementById('mComment').value.trim();
-  const metricRaw = document.getElementById('mMetricVal').value;
-  const goal = GOAL_MAP[editingGoalId];
-
-  if (!author)   { showMMsg('Please enter your name.', 'error'); return; }
-  if (!statusEl) { showMMsg('Please select a status.', 'error'); return; }
-
-  const metricValue = (goal && goal.metric && metricRaw !== '') ? parseFloat(metricRaw) : null;
-
-  const btn = document.getElementById('mSaveBtn');
-  btn.disabled = true; btn.textContent = 'Saving…';
-
-  try {
-    const { error } = await sb.from('goal_updates').update({
-      author, status: statusEl.value,
-      comment: comment || null,
-      metric_value: metricValue
-    }).eq('id', editingId);
-    if (error) throw error;
-    showMMsg('Saved!', 'success');
-    setTimeout(() => { closeModal(); sync(); }, 800);
-  } catch(e) {
-    console.error(e);
-    showMMsg('Error saving: ' + (e.message || 'Unknown error'), 'error');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Save Changes';
-  }
-}
-
-function showMMsg(text, type) {
-  const el = document.getElementById('mMsg');
-  el.textContent = text; el.className = 'modal-msg ' + type;
 }
 
 sync();

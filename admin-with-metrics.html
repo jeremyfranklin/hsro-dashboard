@@ -88,20 +88,27 @@ body {
 
 /* ── Metric input box ────────────────────────── */
 .metric-input-box {
-  background: #F0F8FF; border: 2px solid #9DD8D7; border-radius: 8px;
-  padding: 14px 16px; margin-bottom: 18px; display: none;
+  background: #E8F4F5; border: 2px solid #3ABFC0; border-radius: 8px;
+  padding: 16px 18px; margin-bottom: 18px; display: none;
 }
 .metric-input-box .metric-title {
   font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.07em; color: #4F868E; margin-bottom: 8px;
+  letter-spacing: 0.07em; color: #1E6E72; margin-bottom: 4px;
 }
+.metric-input-box .metric-subtitle {
+  font-size: 0.78rem; color: #4F868E; margin-bottom: 12px; line-height: 1.5;
+}
+.metric-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .metric-input-box input[type="number"] {
-  width: 120px; padding: 9px 12px; border: 2px solid #9DD8D7; border-radius: 6px;
-  font-family: inherit; font-size: 1rem; font-weight: 700; color: #1A1A1A;
+  width: 140px; padding: 10px 14px; border: 2px solid #3ABFC0; border-radius: 6px;
+  font-family: inherit; font-size: 1.1rem; font-weight: 700; color: #1A1A1A;
   background: #fff; text-align: center;
 }
 .metric-input-box input[type="number"]:focus { outline: none; border-color: #4F868E; }
-.metric-hint { font-size: 0.75rem; color: #708E99; margin-top: 6px; }
+.metric-hint { font-size: 0.78rem; color: #4F868E; font-weight: 600; }
+.metric-progress-bar { margin-top: 10px; }
+.metric-progress-bg { height: 6px; background: #B2DFE0; border-radius: 99px; overflow: hidden; }
+.metric-progress-fill { height: 100%; background: #3ABFC0; border-radius: 99px; transition: width 0.5s ease; min-width: 3px; }
 
 /* Status radio grid */
 .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
@@ -269,8 +276,16 @@ body {
       <!-- Metric input — shown only for goals with numeric targets -->
       <div class="metric-input-box" id="metricBox">
         <div class="metric-title" id="metricTitle">Progress Update</div>
-        <input type="number" id="metricInput" min="0" placeholder="0" />
-        <div class="metric-hint" id="metricHint"></div>
+        <div class="metric-subtitle" id="metricSubtitle"></div>
+        <div class="metric-row">
+          <input type="number" id="metricInput" min="0" placeholder="0" oninput="updateMetricBar()" />
+          <div class="metric-hint" id="metricHint"></div>
+        </div>
+        <div class="metric-progress-bar" id="metricProgressBar" style="display:none">
+          <div class="metric-progress-bg">
+            <div class="metric-progress-fill" id="metricProgressFill" style="width:0%"></div>
+          </div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -376,6 +391,16 @@ const sb = isConfigured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_AN
 
 let currentEditId = null; // tracks which update row we're editing
 
+function updateMetricBar() {
+  const input  = document.getElementById('metricInput');
+  const fill   = document.getElementById('metricProgressFill');
+  const target = parseFloat(input.dataset.target);
+  const val    = parseFloat(input.value);
+  if (!fill || isNaN(target) || target <= 0) return;
+  const pct = isNaN(val) ? 0 : Math.min(100, Math.round((val / target) * 100));
+  fill.style.width = pct + '%';
+}
+
 function esc(t) {
   if (!t && t !== 0) return '';
   return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -451,10 +476,14 @@ function onGoalChange() {
     preview.style.display = 'block';
 
     if (foundGoal.metric) {
-      document.getElementById('metricTitle').textContent = `Current ${foundGoal.metric.label}`;
-      document.getElementById('metricHint').textContent = `Target for FY27: ${foundGoal.metric.target}`;
+      document.getElementById('metricTitle').textContent = foundGoal.metric.label;
+      document.getElementById('metricSubtitle').textContent = `Enter the current count toward the FY27 target of ${foundGoal.metric.target}.`;
+      document.getElementById('metricHint').textContent = `Target: ${foundGoal.metric.target}`;
       document.getElementById('metricInput').value = '';
       document.getElementById('metricInput').placeholder = '0';
+      document.getElementById('metricInput').dataset.target = foundGoal.metric.target;
+      document.getElementById('metricProgressFill').style.width = '0%';
+      document.getElementById('metricProgressBar').style.display = 'block';
       metricBox.style.display = 'block';
     }
   }
