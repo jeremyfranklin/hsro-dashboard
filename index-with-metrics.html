@@ -553,7 +553,7 @@ body {
    Default password: HSRO2027!
    Replace hash below to change the password.
 ════════════════════════════════════════════════════ */
-const GATE_PASSWORD_HASH = 'abab999561d01dd4edc25ae253d8c7f5cd99261fcf41b05653c7f12af55c25fb';
+const GATE_PASSWORD_HASH = 'aa1adfc463e4978f7577273b9844d5b53315c4f0341ed7a73a3fdfc53785b283';
 
 async function hashStr(s) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
